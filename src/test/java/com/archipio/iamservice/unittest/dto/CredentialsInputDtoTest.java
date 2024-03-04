@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class CredentialDtoTest {
+public class CredentialsInputDtoTest {
 
   private Validator validator;
 
@@ -26,7 +26,7 @@ public class CredentialDtoTest {
   }
 
   @ParameterizedTest
-  @MethodSource("provideInvalidCredentials")
+  @MethodSource("provideInvalidCredentialsInputDto")
   public void validate_invalidCredentialsInputDto_violationsIsNotEmpty(
       CredentialsInputDto credentialsInputDto, Set<String> expectedErrorFields) {
     // Do
@@ -41,7 +41,7 @@ public class CredentialDtoTest {
     assertThat(actualErrorFields).containsAll(expectedErrorFields);
   }
 
-  private static Stream<Arguments> provideInvalidCredentials() {
+  private static Stream<Arguments> provideInvalidCredentialsInputDto() {
     return Stream.of(
         Arguments.of(
             CredentialsInputDto.builder()

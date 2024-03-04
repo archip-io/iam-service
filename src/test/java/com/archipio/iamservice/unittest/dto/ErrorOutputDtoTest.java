@@ -2,7 +2,7 @@ package com.archipio.iamservice.unittest.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.archipio.iamservice.dto.ErrorDto;
+import com.archipio.iamservice.dto.ErrorOutputDto;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
@@ -13,20 +13,20 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
 @JsonTest
-public class ErrorDtoTest {
+public class ErrorOutputDtoTest {
 
-  @Autowired private JacksonTester<ErrorDto> errorDtoJson;
+  @Autowired private JacksonTester<ErrorOutputDto> errorDtoJson;
 
   @Test
   public void check_errorDtoTestWithoutErrors_jsonWithoutErrors() throws IOException {
     // Prepare
     final Instant createdAt = Instant.now();
     final String message = "Message";
-    ErrorDto errorDto =
-        ErrorDto.builder().createdAt(createdAt).message(message).errors(null).build();
+    ErrorOutputDto errorDto =
+        ErrorOutputDto.builder().createdAt(createdAt).message(message).errors(null).build();
 
     // Do
-    JsonContent<ErrorDto> result = errorDtoJson.write(errorDto);
+    JsonContent<ErrorOutputDto> result = errorDtoJson.write(errorDto);
 
     // Check
     assertThat(result).hasJsonPathStringValue("$.created_at");
@@ -44,11 +44,11 @@ public class ErrorDtoTest {
     final Instant createdAt = Instant.now();
     final String message = "Message";
     final Map<String, String> errors = Map.of("field1", "error1", "field2", "error2");
-    ErrorDto errorDto =
-        ErrorDto.builder().createdAt(createdAt).message(message).errors(errors).build();
+    ErrorOutputDto errorDto =
+        ErrorOutputDto.builder().createdAt(createdAt).message(message).errors(errors).build();
 
     // Do
-    JsonContent<ErrorDto> result = errorDtoJson.write(errorDto);
+    JsonContent<ErrorOutputDto> result = errorDtoJson.write(errorDto);
 
     // Check
     assertThat(result).hasJsonPathStringValue("$.created_at");
