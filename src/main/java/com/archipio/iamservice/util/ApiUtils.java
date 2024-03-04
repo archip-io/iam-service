@@ -8,4 +8,5 @@ public class ApiUtils {
 
   public static final String API_V0_PREFIX = "/api/v0/iam";
   public static final String REGISTRATION_SUFFIX = "/register";
+  public static final String REGISTRATION_SUBMIT_SUFFIX = "/register/submit";
 }

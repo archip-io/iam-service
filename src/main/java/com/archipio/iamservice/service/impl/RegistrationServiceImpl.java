@@ -1,7 +1,10 @@
 package com.archipio.iamservice.service.impl;
 
+import com.archipio.iamservice.cache.entity.CredentialsCache;
 import com.archipio.iamservice.cache.repository.CredentialsRepository;
 import com.archipio.iamservice.dto.CredentialsInputDto;
+import com.archipio.iamservice.dto.TokenInputDto;
+import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import com.archipio.iamservice.mapper.CredentialsMapper;
 import com.archipio.iamservice.service.RegistrationService;
 import jakarta.validation.Valid;
@@ -25,5 +28,15 @@ public class RegistrationServiceImpl implements RegistrationService {
     credentialsRepository.save(credentialsCache);
 
     // TODO: Добавить в Kafka событие отправки письма
+  }
+
+  @Override
+  public void submitRegistration(TokenInputDto inputDto) {
+    CredentialsCache credentialsCache =
+        credentialsRepository
+            .findByToken(inputDto.getToken())
+            .orElseThrow(InvalidOrExpiredTokenException::new);
+
+    // TODO: Создать учётные данные в User Service
   }
 }
