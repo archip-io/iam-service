@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  iam-service-cache:
+    image: redis:latest
+    container_name: iam-service-cache
+    restart: unless-stopped
+    environment:
+      - REDIS_PASSWORD=password
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    ports:
+      - '16379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - iam-service-net
+  cache-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: cache-commander
+    environment:
+      - REDIS_HOSTS=iam-service-cache:iam-service-cache:6379
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=admin
+    ports:
+      - "16380:8081"
+    networks:
+      - iam-service-net
+    depends_on:
+      iam-service-cache:
+        condition: service_healthy
+volumes:
+  redis-data:
+networks:
+  iam-service-net:

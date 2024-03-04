@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: iam-service
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 16379
+      password: password
+server:
+  port: 18081
