@@ -11,4 +11,5 @@ public class ApiUtils {
   public static final String REGISTRATION_SUBMIT_SUFFIX = "/register/submit";
   public static final String AUTHENTICATION_SUFFIX = "/authenticate";
   public static final String RESET_PASSWORD_SUFFIX = "/reset-password";
+  public static final String RESET_PASSWORD_SUBMIT_SUFFIX = "/reset-password/submit";
 }

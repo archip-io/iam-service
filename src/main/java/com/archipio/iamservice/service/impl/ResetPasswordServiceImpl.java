@@ -3,6 +3,8 @@ package com.archipio.iamservice.service.impl;
 import static com.archipio.iamservice.util.CacheUtils.RESET_PASSWORD_CACHE_TTL_S;
 
 import com.archipio.iamservice.dto.ResetPasswordDto;
+import com.archipio.iamservice.dto.ResetPasswordSubmitDto;
+import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import com.archipio.iamservice.service.ResetPasswordService;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -32,5 +34,16 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
             TimeUnit.SECONDS);
 
     // TODO: Добавить в Kafka событие отправки письма
+  }
+
+  @Override
+  public void submitPasswordReset(ResetPasswordSubmitDto resetPasswordSubmitDto) {
+    var resetPasswordDto =
+        redisTemplate
+            .opsForValue()
+            .getAndDelete(RESET_PASSWORD_KEY_PREFIX + resetPasswordSubmitDto.getToken());
+    if (resetPasswordDto == null) {
+      throw new InvalidOrExpiredTokenException();
+    }
   }
 }

@@ -1,6 +1,7 @@
 package com.archipio.iamservice.unittest.service.impl;
 
 import static com.archipio.iamservice.util.CacheUtils.RESET_PASSWORD_CACHE_TTL_S;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -10,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.archipio.iamservice.dto.ResetPasswordDto;
+import com.archipio.iamservice.dto.ResetPasswordSubmitDto;
+import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import com.archipio.iamservice.service.impl.ResetPasswordServiceImpl;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -56,5 +59,46 @@ public class ResetPasswordServiceImplTest {
             eq(resetPasswordDto),
             eq(RESET_PASSWORD_CACHE_TTL_S),
             eq(TimeUnit.SECONDS));
+  }
+
+  @Test
+  public void submitPasswordReset_validAndNotExpiredToken_Nothing() {
+    // Prepare
+    final String token = "Token";
+    final String password = "Password_10";
+    var resetPasswordSubmitDto = ResetPasswordSubmitDto.builder().token(token).build();
+    var resetPasswordDto = ResetPasswordDto.builder().build();
+    var mockValueOperations = mock(ValueOperations.class);
+
+    when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
+    when(mockValueOperations.getAndDelete(any(String.class))).thenReturn(resetPasswordDto);
+
+    // Do
+    resetPasswordService.submitPasswordReset(resetPasswordSubmitDto);
+
+    // Check
+    verify(redisTemplate, times(1)).opsForValue();
+    verify(mockValueOperations, times(1)).getAndDelete(any(String.class));
+  }
+
+  @Test
+  public void submitPasswordReset_invalidOrExpiredToken_thrownInvalidOrExpiredTokenException() {
+    // Prepare
+    final String token = "Token";
+    final String password = "Password_10";
+    var resetPasswordSubmitDto = ResetPasswordSubmitDto.builder().token(token).build();
+    var resetPasswordDto = ResetPasswordDto.builder().build();
+    var mockValueOperations = mock(ValueOperations.class);
+
+    when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
+    when(mockValueOperations.getAndDelete(any(String.class))).thenReturn(null);
+
+    // Do
+    assertThatExceptionOfType(InvalidOrExpiredTokenException.class)
+        .isThrownBy(() -> resetPasswordService.submitPasswordReset(resetPasswordSubmitDto));
+
+    // Check
+    verify(redisTemplate, times(1)).opsForValue();
+    verify(mockValueOperations, times(1)).getAndDelete(any(String.class));
   }
 }
