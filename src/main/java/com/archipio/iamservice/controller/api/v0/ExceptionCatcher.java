@@ -4,7 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-import com.archipio.iamservice.dto.ErrorOutputDto;
+import com.archipio.iamservice.dto.ErrorDto;
 import com.archipio.iamservice.exception.CredentialAlreadyExistsException;
 import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class ExceptionCatcher {
   private final MessageSource messageSource;
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorOutputDto> handleMethodArgumentNotValidException(
+  public ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(
       HttpServletRequest request, MethodArgumentNotValidException e) {
     log.debug("catch MethodArgumentNotValidException", e);
 
@@ -41,7 +41,7 @@ public class ExceptionCatcher {
 
     return ResponseEntity.status(BAD_REQUEST)
         .body(
-            ErrorOutputDto.builder()
+            ErrorDto.builder()
                 .createdAt(Instant.now())
                 .message(
                     messageSource.getMessage(
@@ -51,12 +51,12 @@ public class ExceptionCatcher {
   }
 
   @ExceptionHandler(CredentialAlreadyExistsException.class)
-  public ResponseEntity<ErrorOutputDto> handleCredentialAlreadyExistsException(
+  public ResponseEntity<ErrorDto> handleCredentialAlreadyExistsException(
       HttpServletRequest request, CredentialAlreadyExistsException e) {
     log.debug("catch CredentialAlreadyExistsException", e);
     return ResponseEntity.status(CONFLICT)
         .body(
-            ErrorOutputDto.builder()
+            ErrorDto.builder()
                 .createdAt(Instant.now())
                 .message(
                     messageSource.getMessage(
@@ -67,12 +67,12 @@ public class ExceptionCatcher {
   }
 
   @ExceptionHandler(InvalidOrExpiredTokenException.class)
-  public ResponseEntity<ErrorOutputDto> handleInvalidOrExpiredTokenException(
+  public ResponseEntity<ErrorDto> handleInvalidOrExpiredTokenException(
       HttpServletRequest request, InvalidOrExpiredTokenException e) {
     log.debug("catch InvalidOrExpiredTokenException", e);
     return ResponseEntity.status(NOT_FOUND)
         .body(
-            ErrorOutputDto.builder()
+            ErrorDto.builder()
                 .createdAt(Instant.now())
                 .message(
                     messageSource.getMessage(
