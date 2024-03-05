@@ -1,11 +1,11 @@
 package com.archipio.iamservice.service;
 
-import com.archipio.iamservice.dto.CredentialsInputDto;
-import com.archipio.iamservice.dto.TokenInputDto;
+import com.archipio.iamservice.dto.CredentialsDto;
+import com.archipio.iamservice.dto.TokenDto;
 
 public interface RegistrationService {
 
-  void register(CredentialsInputDto inputDto);
+  void register(CredentialsDto credentialsDto);
 
-  void submitRegistration(TokenInputDto inputDto);
+  void submitRegistration(TokenDto tokenDto);
 }

@@ -2,7 +2,7 @@ package com.archipio.iamservice.unittest.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.archipio.iamservice.dto.CredentialsInputDto;
+import com.archipio.iamservice.dto.CredentialsDto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class CredentialsInputDtoTest {
+public class CredentialsDtoTest {
 
   private Validator validator;
 
@@ -28,9 +28,9 @@ public class CredentialsInputDtoTest {
   @ParameterizedTest
   @MethodSource("provideInvalidCredentialsInputDto")
   public void validate_invalidCredentialsInputDto_violationsIsNotEmpty(
-      CredentialsInputDto credentialsInputDto, Set<String> expectedErrorFields) {
+      CredentialsDto credentialsDto, Set<String> expectedErrorFields) {
     // Do
-    var violations = validator.validate(credentialsInputDto);
+    var violations = validator.validate(credentialsDto);
     var actualErrorFields =
         violations.stream()
             .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
@@ -38,97 +38,97 @@ public class CredentialsInputDtoTest {
 
     // Check
     assertThat(violations.isEmpty()).isFalse();
-    assertThat(actualErrorFields).containsAll(expectedErrorFields);
+    assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
   }
 
   private static Stream<Arguments> provideInvalidCredentialsInputDto() {
     return Stream.of(
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username(null)
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("1")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("useruseruseruseruseruseruseruser")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("user user")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email(null)
                 .password("Password_10")
                 .build(),
             Set.of("email")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email("usermail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("email")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password(null)
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("Password_10Password_10Password_10Password_10Password_10Password_10")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("password_10")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("Password10")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsInputDto.builder()
+            CredentialsDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("Password_")

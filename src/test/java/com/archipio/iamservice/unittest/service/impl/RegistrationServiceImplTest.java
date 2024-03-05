@@ -7,8 +7,8 @@ import static org.mockito.Mockito.when;
 
 import com.archipio.iamservice.cache.entity.CredentialsCache;
 import com.archipio.iamservice.cache.repository.CredentialsRepository;
-import com.archipio.iamservice.dto.CredentialsInputDto;
-import com.archipio.iamservice.dto.TokenInputDto;
+import com.archipio.iamservice.dto.CredentialsDto;
+import com.archipio.iamservice.dto.TokenDto;
 import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import com.archipio.iamservice.mapper.CredentialsMapper;
 import com.archipio.iamservice.service.impl.RegistrationServiceImpl;
@@ -36,7 +36,7 @@ public class RegistrationServiceImplTest {
     final String email = "user@mail.ru";
     final String password = "Password_10";
     var credentialsInputDto =
-        CredentialsInputDto.builder().username(username).email(email).password(password).build();
+        CredentialsDto.builder().username(username).email(email).password(password).build();
     var credentialsCache = CredentialsCache.builder().build();
     when(credentialsMapper.toCache(credentialsInputDto)).thenReturn(credentialsCache);
     when(credentialsRepository.save(credentialsCache)).thenReturn(credentialsCache);
@@ -53,7 +53,7 @@ public class RegistrationServiceImplTest {
   public void submitRegistration_validAndNotExpiredToken_Nothing() {
     // Prepare
     final String token = "Token";
-    var tokenInputDto = TokenInputDto.builder().token(token).build();
+    var tokenInputDto = TokenDto.builder().token(token).build();
     var credentialsCache = CredentialsCache.builder().build();
     when(credentialsRepository.findByToken(token)).thenReturn(Optional.of(credentialsCache));
 
@@ -68,7 +68,7 @@ public class RegistrationServiceImplTest {
   public void submitRegistration_invalidOrExpiredToken_thrownInvalidOrExpiredTokenException() {
     // Prepare
     final String token = "Token";
-    var tokenInputDto = TokenInputDto.builder().token(token).build();
+    var tokenInputDto = TokenDto.builder().token(token).build();
     when(credentialsRepository.findByToken(token)).thenReturn(Optional.empty());
 
     // Do and Check

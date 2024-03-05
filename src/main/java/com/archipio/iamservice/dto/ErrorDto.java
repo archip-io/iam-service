@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ErrorOutputDto {
+public class ErrorDto {
 
   @JsonProperty("created_at")
   private Instant createdAt;

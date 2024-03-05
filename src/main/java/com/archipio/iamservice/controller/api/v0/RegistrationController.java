@@ -6,8 +6,8 @@ import static com.archipio.iamservice.util.ApiUtils.REGISTRATION_SUFFIX;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.CREATED;
 
-import com.archipio.iamservice.dto.CredentialsInputDto;
-import com.archipio.iamservice.dto.TokenInputDto;
+import com.archipio.iamservice.dto.CredentialsDto;
+import com.archipio.iamservice.dto.TokenDto;
 import com.archipio.iamservice.service.RegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +24,14 @@ public class RegistrationController {
   private final RegistrationService registrationService;
 
   @PostMapping(REGISTRATION_SUFFIX)
-  public ResponseEntity<Void> register(@RequestBody CredentialsInputDto inputDto) {
-    registrationService.register(inputDto);
+  public ResponseEntity<Void> register(@RequestBody CredentialsDto credentialsDto) {
+    registrationService.register(credentialsDto);
     return ResponseEntity.status(ACCEPTED).build();
   }
 
   @PostMapping(REGISTRATION_SUBMIT_SUFFIX)
-  public ResponseEntity<Void> submitRegistration(@RequestBody TokenInputDto inputDto) {
-    registrationService.submitRegistration(inputDto);
+  public ResponseEntity<Void> submitRegistration(@RequestBody TokenDto tokenDto) {
+    registrationService.submitRegistration(tokenDto);
     return ResponseEntity.status(CREATED).build();
   }
 }
