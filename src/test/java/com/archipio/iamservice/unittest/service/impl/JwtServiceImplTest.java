@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.archipio.iamservice.config.JwtProperties;
-import com.archipio.iamservice.dto.CredentialsWithAuthoritiesDto;
+import com.archipio.iamservice.dto.CredentialsDto;
 import com.archipio.iamservice.service.impl.JwtServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -37,12 +37,8 @@ class JwtServiceImplTest {
     final var secret = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327854";
     final var accessTokenTtl = 5 * 60 * 1000L;
     final var refreshTokenTtl = 7 * 24 * 60 * 60 * 1000L;
-    CredentialsWithAuthoritiesDto credentialsWithAuthoritiesDto =
-        CredentialsWithAuthoritiesDto.builder()
-            .username(username)
-            .email(email)
-            .authorities(authorities)
-            .build();
+    CredentialsDto credentialsDto =
+        CredentialsDto.builder().username(username).email(email).authorities(authorities).build();
     when(jwtProperties.getSecret()).thenReturn(secret);
     when(jwtProperties.getAccessToken())
         .thenReturn(JwtProperties.AccessTokenProperties.builder().ttl(accessTokenTtl).build());
@@ -50,7 +46,7 @@ class JwtServiceImplTest {
         .thenReturn(JwtProperties.RefreshTokenProperties.builder().ttl(refreshTokenTtl).build());
 
     // Do
-    var jwtTokensDto = jwtService.createTokens(credentialsWithAuthoritiesDto);
+    var jwtTokensDto = jwtService.createTokens(credentialsDto);
 
     // Check
     Claims claims =

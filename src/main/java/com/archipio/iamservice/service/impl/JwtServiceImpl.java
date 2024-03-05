@@ -1,7 +1,7 @@
 package com.archipio.iamservice.service.impl;
 
 import com.archipio.iamservice.config.JwtProperties;
-import com.archipio.iamservice.dto.CredentialsWithAuthoritiesDto;
+import com.archipio.iamservice.dto.CredentialsDto;
 import com.archipio.iamservice.dto.JwtTokensDto;
 import com.archipio.iamservice.service.JwtService;
 import io.jsonwebtoken.Jwts;
@@ -21,25 +21,25 @@ public class JwtServiceImpl implements JwtService {
   private final JwtProperties jwtProperties;
 
   @Override
-  public JwtTokensDto createTokens(CredentialsWithAuthoritiesDto credentialsWithAuthoritiesDto) {
+  public JwtTokensDto createTokens(CredentialsDto credentialsDto) {
     var accessTokenClaims =
         Map.of(
-            "username", credentialsWithAuthoritiesDto.getUsername(),
-            "email", credentialsWithAuthoritiesDto.getEmail(),
-            "authorities", credentialsWithAuthoritiesDto.getAuthorities());
+            "username", credentialsDto.getUsername(),
+            "email", credentialsDto.getEmail(),
+            "authorities", credentialsDto.getAuthorities());
     var refreshTokenClaims =
         Map.of(
-            "username", credentialsWithAuthoritiesDto.getUsername(),
-            "email", credentialsWithAuthoritiesDto.getEmail());
+            "username", credentialsDto.getUsername(),
+            "email", credentialsDto.getEmail());
     return JwtTokensDto.builder()
         .accessToken(
             createToken(
-                credentialsWithAuthoritiesDto.getUsername(),
+                credentialsDto.getUsername(),
                 accessTokenClaims,
                 jwtProperties.getAccessToken().getTtl()))
         .refreshToken(
             createToken(
-                credentialsWithAuthoritiesDto.getUsername(),
+                credentialsDto.getUsername(),
                 refreshTokenClaims,
                 jwtProperties.getRefreshToken().getTtl()))
         .build();

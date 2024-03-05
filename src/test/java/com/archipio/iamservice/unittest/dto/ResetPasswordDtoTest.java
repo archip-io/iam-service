@@ -2,7 +2,7 @@ package com.archipio.iamservice.unittest.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.archipio.iamservice.dto.TokenDto;
+import com.archipio.iamservice.dto.ResetPasswordDto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TokenDtoTest {
+public class ResetPasswordDtoTest {
 
   private Validator validator;
 
@@ -26,11 +26,11 @@ public class TokenDtoTest {
   }
 
   @ParameterizedTest
-  @MethodSource("provideInvalidTokenInputDto")
-  public void validate_invalidTokenInputDto_violationsIsNotEmpty(
-      TokenDto tokenDto, Set<String> expectedErrorFields) {
+  @MethodSource("provideInvalidResetPasswordDto")
+  public void validate_invalidResetPasswordDto_violationsIsNotEmpty(
+      ResetPasswordDto resetPasswordDto, Set<String> expectedErrorFields) {
     // Do
-    var violations = validator.validate(tokenDto);
+    var violations = validator.validate(resetPasswordDto);
     var actualErrorFields =
         violations.stream()
             .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
@@ -41,7 +41,7 @@ public class TokenDtoTest {
     assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
   }
 
-  private static Stream<Arguments> provideInvalidTokenInputDto() {
-    return Stream.of(Arguments.of(TokenDto.builder().token(null).build(), Set.of("token")));
+  private static Stream<Arguments> provideInvalidResetPasswordDto() {
+    return Stream.of(Arguments.of(ResetPasswordDto.builder().login(null).build(), Set.of("login")));
   }
 }

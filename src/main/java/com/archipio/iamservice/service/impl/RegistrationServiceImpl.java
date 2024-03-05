@@ -1,41 +1,54 @@
 package com.archipio.iamservice.service.impl;
 
-import com.archipio.iamservice.cache.entity.CredentialsCache;
-import com.archipio.iamservice.cache.repository.CredentialsRepository;
-import com.archipio.iamservice.dto.CredentialsDto;
-import com.archipio.iamservice.dto.TokenDto;
+import static com.archipio.iamservice.util.CacheUtils.REGISTRATION_CACHE_TTL_S;
+
+import com.archipio.iamservice.dto.ConfirmationTokenDto;
+import com.archipio.iamservice.dto.RegistrationDto;
 import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
-import com.archipio.iamservice.mapper.CredentialsMapper;
 import com.archipio.iamservice.service.RegistrationService;
-import jakarta.validation.Valid;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
 
-  private final CredentialsRepository credentialsRepository;
-  private final CredentialsMapper credentialsMapper;
+  private static final String REGISTRATION_KEY_PREFIX = "service:registration:";
+
+  private final RedisTemplate<String, RegistrationDto> redisTemplate;
+  private final BCryptPasswordEncoder passwordEncoder;
 
   @Override
-  public void register(@Valid CredentialsDto credentialsDto) {
+  public void register(RegistrationDto registrationDto) {
     // TODO: Проверить есть ли такие учётные данные в User Service
 
-    var credentialsCache = credentialsMapper.toCache(credentialsDto);
-    credentialsCache.setToken(UUID.randomUUID().toString());
-    credentialsRepository.save(credentialsCache);
+    registrationDto.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+
+    var token = UUID.randomUUID().toString();
+    redisTemplate
+        .opsForValue()
+        .set(
+            REGISTRATION_KEY_PREFIX + token,
+            registrationDto,
+            REGISTRATION_CACHE_TTL_S,
+            TimeUnit.SECONDS);
 
     // TODO: Добавить в Kafka событие отправки письма
   }
 
   @Override
-  public void submitRegistration(@Valid TokenDto tokenDto) {
-    CredentialsCache credentialsCache =
-        credentialsRepository
-            .findByToken(tokenDto.getToken())
-            .orElseThrow(InvalidOrExpiredTokenException::new);
+  public void submitRegistration(ConfirmationTokenDto confirmationTokenDto) {
+    var registrationDto =
+        redisTemplate
+            .opsForValue()
+            .getAndDelete(REGISTRATION_KEY_PREFIX + confirmationTokenDto.getToken());
+    if (registrationDto == null) {
+      throw new InvalidOrExpiredTokenException();
+    }
 
     // TODO: Создать учётные данные в User Service
   }
