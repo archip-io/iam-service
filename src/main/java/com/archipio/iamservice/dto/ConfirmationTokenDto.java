@@ -1,6 +1,6 @@
 package com.archipio.iamservice.dto;
 
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,9 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CredentialsWithAuthoritiesDto {
+public class ConfirmationTokenDto {
 
-  private String username;
-  private String email;
-  private List<String> authorities;
+  @NotNull(message = "{validation.token.not-null}")
+  private String token;
 }

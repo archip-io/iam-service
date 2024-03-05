@@ -1,9 +1,9 @@
 package com.archipio.iamservice.service;
 
 import com.archipio.iamservice.dto.AuthenticationDto;
-import com.archipio.iamservice.dto.CredentialsWithAuthoritiesDto;
+import com.archipio.iamservice.dto.CredentialsDto;
 
 public interface AuthenticationService {
 
-  CredentialsWithAuthoritiesDto authenticate(AuthenticationDto authenticationDto);
+  CredentialsDto authenticate(AuthenticationDto authenticationDto);
 }

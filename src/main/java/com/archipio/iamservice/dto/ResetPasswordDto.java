@@ -12,8 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TokenDto {
+public class ResetPasswordDto {
 
-  @NotNull(message = "{validation.token.not-null}")
-  private String token;
+  @NotNull(message = "{validation.login.not-null}")
+  private String login;
 }

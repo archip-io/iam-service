@@ -2,7 +2,7 @@ package com.archipio.iamservice.unittest.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.archipio.iamservice.dto.CredentialsDto;
+import com.archipio.iamservice.dto.RegistrationDto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class CredentialsDtoTest {
+public class RegistrationDtoTest {
 
   private Validator validator;
 
@@ -28,9 +28,9 @@ public class CredentialsDtoTest {
   @ParameterizedTest
   @MethodSource("provideInvalidCredentialsInputDto")
   public void validate_invalidCredentialsInputDto_violationsIsNotEmpty(
-      CredentialsDto credentialsDto, Set<String> expectedErrorFields) {
+      RegistrationDto registrationDto, Set<String> expectedErrorFields) {
     // Do
-    var violations = validator.validate(credentialsDto);
+    var violations = validator.validate(registrationDto);
     var actualErrorFields =
         violations.stream()
             .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
@@ -44,91 +44,91 @@ public class CredentialsDtoTest {
   private static Stream<Arguments> provideInvalidCredentialsInputDto() {
     return Stream.of(
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username(null)
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("1")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("useruseruseruseruseruseruseruser")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("user user")
                 .email("user@mail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("username")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email(null)
                 .password("Password_10")
                 .build(),
             Set.of("email")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email("usermail.ru")
                 .password("Password_10")
                 .build(),
             Set.of("email")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password(null)
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("Password_10Password_10Password_10Password_10Password_10Password_10")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("password_10")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("Password10")
                 .build(),
             Set.of("password")),
         Arguments.of(
-            CredentialsDto.builder()
+            RegistrationDto.builder()
                 .username("username")
                 .email("user@mail.ru")
                 .password("Password_")

@@ -8,6 +8,7 @@ import com.archipio.iamservice.dto.AuthenticationDto;
 import com.archipio.iamservice.dto.JwtTokensDto;
 import com.archipio.iamservice.service.AuthenticationService;
 import com.archipio.iamservice.service.JwtService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ public class AuthenticationController {
 
   @PostMapping(AUTHENTICATION_SUFFIX)
   public ResponseEntity<JwtTokensDto> authenticate(
-      @RequestBody AuthenticationDto authenticationDto) {
+      @Valid @RequestBody AuthenticationDto authenticationDto) {
     var credentialsWithAuthoritiesDto = authenticationService.authenticate(authenticationDto);
     var jwtTokensDto = jwtService.createTokens(credentialsWithAuthoritiesDto);
     return ResponseEntity.status(OK).body(jwtTokensDto);
