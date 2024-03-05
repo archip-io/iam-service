@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ConfirmationTokenDto {
+public class RegistrationSubmitDto {
 
   @NotNull(message = "{validation.token.not-null}")
   private String token;

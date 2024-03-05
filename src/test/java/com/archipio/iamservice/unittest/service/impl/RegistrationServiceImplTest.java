@@ -10,8 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.archipio.iamservice.dto.ConfirmationTokenDto;
 import com.archipio.iamservice.dto.RegistrationDto;
+import com.archipio.iamservice.dto.RegistrationSubmitDto;
 import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import com.archipio.iamservice.service.impl.RegistrationServiceImpl;
 import java.util.concurrent.TimeUnit;
@@ -71,7 +71,7 @@ public class RegistrationServiceImplTest {
   public void submitRegistration_validAndNotExpiredToken_Nothing() {
     // Prepare
     final String token = "Token";
-    var tokenInputDto = ConfirmationTokenDto.builder().token(token).build();
+    var registrationSubmitDto = RegistrationSubmitDto.builder().token(token).build();
     var registrationDto = RegistrationDto.builder().build();
     var mockValueOperations = mock(ValueOperations.class);
 
@@ -79,7 +79,7 @@ public class RegistrationServiceImplTest {
     when(mockValueOperations.getAndDelete(any(String.class))).thenReturn(registrationDto);
 
     // Do
-    registrationService.submitRegistration(tokenInputDto);
+    registrationService.submitRegistration(registrationSubmitDto);
 
     // Check
     verify(redisTemplate, times(1)).opsForValue();
@@ -90,7 +90,7 @@ public class RegistrationServiceImplTest {
   public void submitRegistration_invalidOrExpiredToken_thrownInvalidOrExpiredTokenException() {
     // Prepare
     final String token = "Token";
-    var tokenInputDto = ConfirmationTokenDto.builder().token(token).build();
+    var registrationSubmitDto = RegistrationSubmitDto.builder().token(token).build();
     var mockValueOperations = mock(ValueOperations.class);
 
     when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
@@ -98,7 +98,7 @@ public class RegistrationServiceImplTest {
 
     // Do
     assertThatExceptionOfType(InvalidOrExpiredTokenException.class)
-        .isThrownBy(() -> registrationService.submitRegistration(tokenInputDto));
+        .isThrownBy(() -> registrationService.submitRegistration(registrationSubmitDto));
 
     // Check
     verify(redisTemplate, times(1)).opsForValue();

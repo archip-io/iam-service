@@ -103,7 +103,7 @@ public class RegistrationDtoTest {
             RegistrationDto.builder()
                 .username("username")
                 .email("user@mail.ru")
-                .password("")
+                .password("Pw_1")
                 .build(),
             Set.of("password")),
         Arguments.of(

@@ -2,7 +2,7 @@ package com.archipio.iamservice.unittest.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.archipio.iamservice.dto.ConfirmationTokenDto;
+import com.archipio.iamservice.dto.RegistrationSubmitDto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ConfirmationTokenDtoTest {
+public class RegistrationSubmitDtoTest {
 
   private Validator validator;
 
@@ -26,11 +26,11 @@ public class ConfirmationTokenDtoTest {
   }
 
   @ParameterizedTest
-  @MethodSource("provideInvalidConfirmationTokenDto")
-  public void validate_invalidConfirmationTokenDto_violationsIsNotEmpty(
-      ConfirmationTokenDto confirmationTokenDto, Set<String> expectedErrorFields) {
+  @MethodSource("provideInvalidRegistrationSubmitDto")
+  public void validate_invalidRegistrationSubmitDto_violationsIsNotEmpty(
+      RegistrationSubmitDto registrationSubmitDto, Set<String> expectedErrorFields) {
     // Do
-    var violations = validator.validate(confirmationTokenDto);
+    var violations = validator.validate(registrationSubmitDto);
     var actualErrorFields =
         violations.stream()
             .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
@@ -41,8 +41,8 @@ public class ConfirmationTokenDtoTest {
     assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
   }
 
-  private static Stream<Arguments> provideInvalidConfirmationTokenDto() {
+  private static Stream<Arguments> provideInvalidRegistrationSubmitDto() {
     return Stream.of(
-        Arguments.of(ConfirmationTokenDto.builder().token(null).build(), Set.of("token")));
+        Arguments.of(RegistrationSubmitDto.builder().token(null).build(), Set.of("token")));
   }
 }
