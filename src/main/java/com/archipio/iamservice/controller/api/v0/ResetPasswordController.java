@@ -10,6 +10,9 @@ import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import com.archipio.iamservice.dto.ResetPasswordDto;
 import com.archipio.iamservice.exception.NullTokenException;
 import com.archipio.iamservice.service.ResetPasswordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,21 +25,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(API_V0_PREFIX)
+@Tag(name = "Reset Password Controller", description = "Эндпоинты для сброса паролей пользователей")
 public class ResetPasswordController {
 
   private final ResetPasswordService resetPasswordService;
 
   @PostMapping(RESET_PASSWORD_SUFFIX)
+  @Operation(
+      summary = "Сброс пароля пользователя",
+      description = "Проверяет логин пользователя и при успехе отправляет письмо на почту")
   public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
     resetPasswordService.resetPassword(resetPasswordDto);
     return ResponseEntity.status(ACCEPTED).build();
   }
 
   @PostMapping(RESET_PASSWORD_CONFIRM_SUFFIX)
+  @Operation(
+      summary = "Подтверждение сброса пароля и обновление пароля",
+      description =
+          "Проверяет токен подтверждения и новый пароль пользователя и при успехе обновляет пароль")
   public ResponseEntity<Void> confirmRegistration(
-      @RequestParam("token") String token,
+      @Parameter(name = "token", description = "Confirmation token", required = true)
+          @RequestParam("token")
+          String token,
       @RequestBody ResetPasswordConfirmDto resetPasswordConfirmDto) {
-    if (token == null) {
+    if (token == null || token.isEmpty()) {
       throw new NullTokenException();
     }
     resetPasswordService.confirmPasswordReset(token, resetPasswordConfirmDto);
