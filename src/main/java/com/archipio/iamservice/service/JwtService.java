@@ -6,4 +6,8 @@ import com.archipio.iamservice.dto.JwtTokensDto;
 public interface JwtService {
 
   JwtTokensDto createTokens(CredentialsDto credentialsDto);
+
+  String extractUsername(String token);
+
+  boolean validate(String token);
 }

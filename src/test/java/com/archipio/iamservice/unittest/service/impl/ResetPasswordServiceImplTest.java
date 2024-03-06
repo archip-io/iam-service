@@ -10,8 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import com.archipio.iamservice.dto.ResetPasswordDto;
-import com.archipio.iamservice.dto.ResetPasswordSubmitDto;
 import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import com.archipio.iamservice.service.impl.ResetPasswordServiceImpl;
 import java.util.concurrent.TimeUnit;
@@ -62,11 +62,11 @@ public class ResetPasswordServiceImplTest {
   }
 
   @Test
-  public void submitPasswordReset_validAndNotExpiredToken_Nothing() {
+  public void confirmPasswordReset_validAndNotExpiredToken_Nothing() {
     // Prepare
     final String token = "Token";
     final String password = "Password_10";
-    var resetPasswordSubmitDto = ResetPasswordSubmitDto.builder().token(token).build();
+    var resetPasswordConfirmDto = ResetPasswordConfirmDto.builder().build();
     var resetPasswordDto = ResetPasswordDto.builder().build();
     var mockValueOperations = mock(ValueOperations.class);
 
@@ -74,7 +74,7 @@ public class ResetPasswordServiceImplTest {
     when(mockValueOperations.getAndDelete(any(String.class))).thenReturn(resetPasswordDto);
 
     // Do
-    resetPasswordService.submitPasswordReset(resetPasswordSubmitDto);
+    resetPasswordService.confirmPasswordReset(token, resetPasswordConfirmDto);
 
     // Check
     verify(redisTemplate, times(1)).opsForValue();
@@ -82,11 +82,11 @@ public class ResetPasswordServiceImplTest {
   }
 
   @Test
-  public void submitPasswordReset_invalidOrExpiredToken_thrownInvalidOrExpiredTokenException() {
+  public void confirmPasswordReset_invalidOrExpiredToken_thrownInvalidOrExpiredTokenException() {
     // Prepare
     final String token = "Token";
     final String password = "Password_10";
-    var resetPasswordSubmitDto = ResetPasswordSubmitDto.builder().token(token).build();
+    var resetPasswordConfirmDto = ResetPasswordConfirmDto.builder().build();
     var resetPasswordDto = ResetPasswordDto.builder().build();
     var mockValueOperations = mock(ValueOperations.class);
 
@@ -95,7 +95,8 @@ public class ResetPasswordServiceImplTest {
 
     // Do
     assertThatExceptionOfType(InvalidOrExpiredTokenException.class)
-        .isThrownBy(() -> resetPasswordService.submitPasswordReset(resetPasswordSubmitDto));
+        .isThrownBy(
+            () -> resetPasswordService.confirmPasswordReset(token, resetPasswordConfirmDto));
 
     // Check
     verify(redisTemplate, times(1)).opsForValue();

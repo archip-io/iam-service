@@ -2,7 +2,7 @@ package com.archipio.iamservice.unittest.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.archipio.iamservice.dto.ResetPasswordSubmitDto;
+import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ResetPasswordSubmitDtoTest {
+public class ResetPasswordConfirmDtoTest {
 
   private Validator validator;
 
@@ -26,11 +26,11 @@ public class ResetPasswordSubmitDtoTest {
   }
 
   @ParameterizedTest
-  @MethodSource("provideInvalidResetPasswordSubmitDto")
-  public void validate_invalidResetPasswordSubmitDto_violationsIsNotEmpty(
-      ResetPasswordSubmitDto resetPasswordSubmitDto, Set<String> expectedErrorFields) {
+  @MethodSource("provideInvalidResetPasswordConfirmDto")
+  public void validate_invalidResetPasswordConfirmDto_violationsIsNotEmpty(
+      ResetPasswordConfirmDto resetPasswordConfirmDto, Set<String> expectedErrorFields) {
     // Do
-    var violations = validator.validate(resetPasswordSubmitDto);
+    var violations = validator.validate(resetPasswordConfirmDto);
     var actualErrorFields =
         violations.stream()
             .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
@@ -41,29 +41,19 @@ public class ResetPasswordSubmitDtoTest {
     assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
   }
 
-  private static Stream<Arguments> provideInvalidResetPasswordSubmitDto() {
+  private static Stream<Arguments> provideInvalidResetPasswordConfirmDto() {
     return Stream.of(
+        Arguments.of(ResetPasswordConfirmDto.builder().password(null).build(), Set.of("password")),
         Arguments.of(
-            ResetPasswordSubmitDto.builder().token(null).password("Password_10").build(),
-            Set.of("token")),
+            ResetPasswordConfirmDto.builder().password("password_10").build(), Set.of("password")),
         Arguments.of(
-            ResetPasswordSubmitDto.builder().token("Token").password(null).build(),
-            Set.of("password")),
+            ResetPasswordConfirmDto.builder().password("Password10").build(), Set.of("password")),
         Arguments.of(
-            ResetPasswordSubmitDto.builder().token("Token").password("password_10").build(),
-            Set.of("password")),
+            ResetPasswordConfirmDto.builder().password("Password_").build(), Set.of("password")),
         Arguments.of(
-            ResetPasswordSubmitDto.builder().token("Token").password("Password10").build(),
-            Set.of("password")),
+            ResetPasswordConfirmDto.builder().password("Pw_1").build(), Set.of("password")),
         Arguments.of(
-            ResetPasswordSubmitDto.builder().token("Token").password("Password_").build(),
-            Set.of("password")),
-        Arguments.of(
-            ResetPasswordSubmitDto.builder().token("Token").password("Pw_1").build(),
-            Set.of("password")),
-        Arguments.of(
-            ResetPasswordSubmitDto.builder()
-                .token("Token")
+            ResetPasswordConfirmDto.builder()
                 .password("Password_10Password_10Password_10Password_10Password_10Password_10")
                 .build(),
             Set.of("password")));

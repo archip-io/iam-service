@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ResetPasswordSubmitDto {
+public class ResetPasswordConfirmDto {
 
   @NotNull(message = "{validation.password.not-null}")
   @Length(
@@ -27,7 +27,4 @@ public class ResetPasswordSubmitDto {
       message = "{validation.password.length}")
   @Pattern(regexp = PASSWORD_REGEX, message = "{validation.password.pattern}")
   private String password;
-
-  @NotNull(message = "{validation.token.not-null}")
-  private String token;
 }
