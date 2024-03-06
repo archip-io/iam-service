@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,13 +18,10 @@ public class RegistrationServiceImpl implements RegistrationService {
   private static final String REGISTRATION_KEY_PREFIX = "service:registration:";
 
   private final RedisTemplate<String, RegistrationDto> redisTemplate;
-  private final BCryptPasswordEncoder passwordEncoder;
 
   @Override
   public void register(RegistrationDto registrationDto) {
     // TODO: Проверить есть ли такие учётные данные в User Service
-
-    registrationDto.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
 
     var token = UUID.randomUUID().toString();
     redisTemplate

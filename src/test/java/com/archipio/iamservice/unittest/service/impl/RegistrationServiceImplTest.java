@@ -23,14 +23,12 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class RegistrationServiceImplTest {
 
   @Mock private RedisTemplate<String, RegistrationDto> redisTemplate;
-  @Mock private BCryptPasswordEncoder passwordEncoder;
   @InjectMocks private RegistrationServiceImpl registrationService;
 
   @Test
@@ -43,7 +41,6 @@ public class RegistrationServiceImplTest {
         RegistrationDto.builder().username(username).email(email).password(password).build();
     var mockValueOperations = mock(ValueOperations.class);
 
-    when(passwordEncoder.encode(password)).thenReturn(password);
     when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
     doNothing()
         .when(mockValueOperations)
