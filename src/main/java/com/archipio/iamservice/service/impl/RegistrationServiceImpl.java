@@ -3,7 +3,6 @@ package com.archipio.iamservice.service.impl;
 import static com.archipio.iamservice.util.CacheUtils.REGISTRATION_CACHE_TTL_S;
 
 import com.archipio.iamservice.dto.RegistrationDto;
-import com.archipio.iamservice.dto.RegistrationSubmitDto;
 import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
 import com.archipio.iamservice.service.RegistrationService;
 import java.util.UUID;
@@ -41,11 +40,8 @@ public class RegistrationServiceImpl implements RegistrationService {
   }
 
   @Override
-  public void submitRegistration(RegistrationSubmitDto registrationSubmitDto) {
-    var registrationDto =
-        redisTemplate
-            .opsForValue()
-            .getAndDelete(REGISTRATION_KEY_PREFIX + registrationSubmitDto.getToken());
+  public void confirmRegistration(String token) {
+    var registrationDto = redisTemplate.opsForValue().getAndDelete(REGISTRATION_KEY_PREFIX + token);
     if (registrationDto == null) {
       throw new InvalidOrExpiredTokenException();
     }

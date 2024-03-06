@@ -1,9 +1,11 @@
 package com.archipio.iamservice.service;
 
 import com.archipio.iamservice.dto.AuthenticationDto;
-import com.archipio.iamservice.dto.CredentialsDto;
+import com.archipio.iamservice.dto.JwtTokensDto;
 
 public interface AuthenticationService {
 
-  CredentialsDto authenticate(AuthenticationDto authenticationDto);
+  JwtTokensDto authenticate(AuthenticationDto authenticationDto);
+
+  JwtTokensDto refresh(String token);
 }
