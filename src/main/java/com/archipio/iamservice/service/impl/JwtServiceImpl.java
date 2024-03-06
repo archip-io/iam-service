@@ -3,7 +3,7 @@ package com.archipio.iamservice.service.impl;
 import com.archipio.iamservice.config.JwtProperties;
 import com.archipio.iamservice.dto.CredentialsDto;
 import com.archipio.iamservice.dto.JwtTokensDto;
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
 import com.archipio.iamservice.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -59,7 +59,7 @@ public class JwtServiceImpl implements JwtService {
     try {
       var expiration = extractExpiration(token);
       return expiration.after(new Date());
-    } catch (InvalidOrExpiredTokenException e) {
+    } catch (InvalidOrExpiredJwtTokenException e) {
       return false;
     }
   }
@@ -89,7 +89,7 @@ public class JwtServiceImpl implements JwtService {
               .getBody();
       return claimsResolver.apply(claims);
     } catch (JwtException e) {
-      throw new InvalidOrExpiredTokenException();
+      throw new InvalidOrExpiredJwtTokenException();
     }
   }
 

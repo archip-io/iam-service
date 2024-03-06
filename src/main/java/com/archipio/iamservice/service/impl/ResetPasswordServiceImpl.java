@@ -4,7 +4,7 @@ import static com.archipio.iamservice.util.CacheUtils.RESET_PASSWORD_CACHE_TTL_S
 
 import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import com.archipio.iamservice.dto.ResetPasswordDto;
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.ResetPasswordService;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +41,7 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
     var resetPasswordDto =
         redisTemplate.opsForValue().getAndDelete(RESET_PASSWORD_KEY_PREFIX + token);
     if (resetPasswordDto == null) {
-      throw new InvalidOrExpiredTokenException();
+      throw new InvalidOrExpiredConfirmationTokenException();
     }
   }
 }

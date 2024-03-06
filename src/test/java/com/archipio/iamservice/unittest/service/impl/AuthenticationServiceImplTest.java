@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.JwtService;
 import com.archipio.iamservice.service.impl.AuthenticationServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class AuthenticationServiceImplTest {
     when(jwtService.validate(any(String.class))).thenReturn(false);
 
     // Do and Check
-    assertThatExceptionOfType(InvalidOrExpiredTokenException.class)
+    assertThatExceptionOfType(InvalidOrExpiredConfirmationTokenException.class)
         .isThrownBy(() -> authenticationService.refresh(token));
   }
 }

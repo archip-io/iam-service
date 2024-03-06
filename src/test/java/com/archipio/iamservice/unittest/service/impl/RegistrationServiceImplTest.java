@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.archipio.iamservice.dto.RegistrationDto;
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.impl.RegistrationServiceImpl;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -94,7 +94,7 @@ public class RegistrationServiceImplTest {
     when(mockValueOperations.getAndDelete(any(String.class))).thenReturn(null);
 
     // Do
-    assertThatExceptionOfType(InvalidOrExpiredTokenException.class)
+    assertThatExceptionOfType(InvalidOrExpiredConfirmationTokenException.class)
         .isThrownBy(() -> registrationService.confirmRegistration(token));
 
     // Check
