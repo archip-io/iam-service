@@ -3,7 +3,7 @@ package com.archipio.iamservice.service.impl;
 import static com.archipio.iamservice.util.CacheUtils.REGISTRATION_CACHE_TTL_S;
 
 import com.archipio.iamservice.dto.RegistrationDto;
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.RegistrationService;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +43,7 @@ public class RegistrationServiceImpl implements RegistrationService {
   public void confirmRegistration(String token) {
     var registrationDto = redisTemplate.opsForValue().getAndDelete(REGISTRATION_KEY_PREFIX + token);
     if (registrationDto == null) {
-      throw new InvalidOrExpiredTokenException();
+      throw new InvalidOrExpiredConfirmationTokenException();
     }
 
     // TODO: Создать учётные данные в User Service

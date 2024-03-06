@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import com.archipio.iamservice.dto.ResetPasswordDto;
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.impl.ResetPasswordServiceImpl;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -94,7 +94,7 @@ public class ResetPasswordServiceImplTest {
     when(mockValueOperations.getAndDelete(any(String.class))).thenReturn(null);
 
     // Do
-    assertThatExceptionOfType(InvalidOrExpiredTokenException.class)
+    assertThatExceptionOfType(InvalidOrExpiredConfirmationTokenException.class)
         .isThrownBy(
             () -> resetPasswordService.confirmPasswordReset(token, resetPasswordConfirmDto));
 

@@ -4,10 +4,12 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.archipio.iamservice.dto.ErrorDto;
 import com.archipio.iamservice.exception.CredentialAlreadyExistsException;
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
 import com.archipio.iamservice.exception.NullTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -128,16 +130,31 @@ public class ExceptionCatcher {
                 .build());
   }
 
-  @ExceptionHandler(InvalidOrExpiredTokenException.class)
+  @ExceptionHandler(InvalidOrExpiredConfirmationTokenException.class)
   public ResponseEntity<ErrorDto> handleInvalidOrExpiredTokenException(
-      HttpServletRequest request, InvalidOrExpiredTokenException e) {
+      HttpServletRequest request, InvalidOrExpiredConfirmationTokenException e) {
     return ResponseEntity.status(BAD_REQUEST)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
                 .message(
                     messageSource.getMessage(
-                        "exception.invalid-or-expired-token",
+                        "exception.invalid-or-expired-confirmation-token",
+                        null,
+                        RequestContextUtils.getLocale(request)))
+                .build());
+  }
+
+  @ExceptionHandler(InvalidOrExpiredJwtTokenException.class)
+  public ResponseEntity<ErrorDto> handleInvalidOrExpiredJwtTokenException(
+      HttpServletRequest request, InvalidOrExpiredJwtTokenException e) {
+    return ResponseEntity.status(UNAUTHORIZED)
+        .body(
+            ErrorDto.builder()
+                .createdAt(Instant.now())
+                .message(
+                    messageSource.getMessage(
+                        "exception.invalid-or-expired-jwt-token",
                         null,
                         RequestContextUtils.getLocale(request)))
                 .build());

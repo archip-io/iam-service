@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.archipio.iamservice.config.JwtProperties;
 import com.archipio.iamservice.dto.CredentialsDto;
-import com.archipio.iamservice.exception.InvalidOrExpiredTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
 import com.archipio.iamservice.service.impl.JwtServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -88,7 +88,7 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void extractUsername_invalidTokenSign_username() {
+  public void extractUsername_invalidTokenSign_thrownInvalidOrExpiredJwtTokenException() {
     // Prepare
     final var username = "user";
     final var secret1 = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327853";
@@ -103,7 +103,7 @@ class JwtServiceImplTest {
     when(jwtProperties.getSecret()).thenReturn(secret2);
 
     // Do and Check
-    assertThatExceptionOfType(InvalidOrExpiredTokenException.class)
+    assertThatExceptionOfType(InvalidOrExpiredJwtTokenException.class)
         .isThrownBy(() -> jwtService.extractUsername(token));
   }
 
