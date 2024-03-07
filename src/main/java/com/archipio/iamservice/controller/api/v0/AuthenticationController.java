@@ -1,8 +1,8 @@
 package com.archipio.iamservice.controller.api.v0;
 
-import static com.archipio.iamservice.util.ApiUtils.API_V0_PREFIX;
-import static com.archipio.iamservice.util.ApiUtils.AUTHENTICATION_SUFFIX;
-import static com.archipio.iamservice.util.ApiUtils.REFRESH_TOKENS_SUFFIX;
+import static com.archipio.iamservice.util.PathUtils.API_V0_PREFIX;
+import static com.archipio.iamservice.util.PathUtils.AUTHENTICATION_SUFFIX;
+import static com.archipio.iamservice.util.PathUtils.REFRESH_TOKENS_SUFFIX;
 import static org.springframework.http.HttpStatus.OK;
 
 import com.archipio.iamservice.dto.AuthenticationDto;
