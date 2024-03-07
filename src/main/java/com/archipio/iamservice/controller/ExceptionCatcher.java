@@ -1,13 +1,15 @@
-package com.archipio.iamservice.controller.api.v0;
+package com.archipio.iamservice.controller;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.archipio.iamservice.dto.ErrorDto;
-import com.archipio.iamservice.exception.CredentialAlreadyExistsException;
+import com.archipio.iamservice.exception.CredentialsAlreadyExistsException;
+import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
 import com.archipio.iamservice.exception.NullTokenException;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -115,9 +118,9 @@ public class ExceptionCatcher {
                 .build());
   }
 
-  @ExceptionHandler(CredentialAlreadyExistsException.class)
+  @ExceptionHandler(CredentialsAlreadyExistsException.class)
   public ResponseEntity<ErrorDto> handleCredentialAlreadyExistsException(
-      HttpServletRequest request, CredentialAlreadyExistsException e) {
+      HttpServletRequest request, CredentialsAlreadyExistsException e) {
     return ResponseEntity.status(CONFLICT)
         .body(
             ErrorDto.builder()
@@ -125,6 +128,21 @@ public class ExceptionCatcher {
                 .message(
                     messageSource.getMessage(
                         "exception.credentials-already-exists",
+                        null,
+                        RequestContextUtils.getLocale(request)))
+                .build());
+  }
+
+  @ExceptionHandler(CredentialsNotFoundException.class)
+  public ResponseEntity<ErrorDto> handleCredentialsNotFoundException(
+      HttpServletRequest request, CredentialsNotFoundException e) {
+    return ResponseEntity.status(NOT_FOUND)
+        .body(
+            ErrorDto.builder()
+                .createdAt(Instant.now())
+                .message(
+                    messageSource.getMessage(
+                        "exception.credentials-not-found",
                         null,
                         RequestContextUtils.getLocale(request)))
                 .build());
@@ -171,6 +189,14 @@ public class ExceptionCatcher {
                     messageSource.getMessage(
                         "exception.null-token", null, RequestContextUtils.getLocale(request)))
                 .build());
+  }
+
+  @ExceptionHandler(HttpClientErrorException.class)
+  public ResponseEntity<String> handleHttpClientErrorException(
+      HttpServletRequest request, HttpClientErrorException e) {
+    var code = e.getStatusCode();
+    var body = e.getResponseBodyAsString();
+    return ResponseEntity.status(code).body(body);
   }
 
   @ExceptionHandler(Exception.class)

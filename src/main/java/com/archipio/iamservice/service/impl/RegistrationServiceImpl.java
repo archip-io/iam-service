@@ -2,7 +2,9 @@ package com.archipio.iamservice.service.impl;
 
 import static com.archipio.iamservice.util.CacheUtils.REGISTRATION_CACHE_TTL_S;
 
+import com.archipio.iamservice.client.UserServiceClient;
 import com.archipio.iamservice.dto.RegistrationDto;
+import com.archipio.iamservice.exception.CredentialsAlreadyExistsException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.RegistrationService;
 import java.util.UUID;
@@ -18,10 +20,16 @@ public class RegistrationServiceImpl implements RegistrationService {
   private static final String REGISTRATION_KEY_PREFIX = "service:registration:";
 
   private final RedisTemplate<String, RegistrationDto> redisTemplate;
+  private final UserServiceClient userServiceClient;
 
   @Override
   public void register(RegistrationDto registrationDto) {
-    // TODO: Проверить есть ли такие учётные данные в User Service
+    var userCredentials =
+        userServiceClient.findCredentialsByUsernameAndEmail(
+            registrationDto.getUsername(), registrationDto.getEmail());
+    if (userCredentials != null) {
+      throw new CredentialsAlreadyExistsException();
+    }
 
     var token = UUID.randomUUID().toString();
     redisTemplate
@@ -42,6 +50,6 @@ public class RegistrationServiceImpl implements RegistrationService {
       throw new InvalidOrExpiredConfirmationTokenException();
     }
 
-    // TODO: Создать учётные данные в User Service
+    userServiceClient.saveCredentials(registrationDto);
   }
 }

@@ -55,6 +55,11 @@ public class JwtServiceImpl implements JwtService {
   }
 
   @Override
+  public String extractEmail(String token) {
+    return extractClaim(token, claims -> claims.get("email", String.class));
+  }
+
+  @Override
   public boolean validate(String token) {
     try {
       var expiration = extractExpiration(token);
