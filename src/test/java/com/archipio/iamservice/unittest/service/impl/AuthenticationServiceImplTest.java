@@ -3,6 +3,7 @@ package com.archipio.iamservice.unittest.service.impl;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.JwtService;
@@ -13,10 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@MockitoSettings(strictness = LENIENT)
 class AuthenticationServiceImplTest {
 
   @Mock JwtService jwtService;

@@ -1,7 +1,9 @@
 package com.archipio.iamservice.service.impl;
 
+import com.archipio.iamservice.client.UserServiceClient;
 import com.archipio.iamservice.dto.AuthenticationDto;
 import com.archipio.iamservice.dto.JwtTokensDto;
+import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.AuthenticationService;
 import com.archipio.iamservice.service.JwtService;
@@ -13,16 +15,19 @@ import org.springframework.stereotype.Service;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
   private final JwtService jwtService;
+  private final UserServiceClient userServiceClient;
 
   @Override
   public JwtTokensDto authenticate(AuthenticationDto authenticationDto) {
-    // TODO: Запросить учётные данные у User Service
+    userServiceClient.validatePassword(
+        authenticationDto.getLogin(), authenticationDto.getPassword());
 
-    // TODO: Проверить пароль
+    var credentialsDto = userServiceClient.findCredentialsByLogin(authenticationDto.getLogin());
+    if (credentialsDto == null) {
+      throw new CredentialsNotFoundException();
+    }
 
-    // return jwtService.createTokens(credentialsDto);
-
-    return null;
+    return jwtService.createTokens(credentialsDto);
   }
 
   @Override
@@ -31,11 +36,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       throw new InvalidOrExpiredConfirmationTokenException();
     }
     var username = jwtService.extractUsername(token);
+    var email = jwtService.extractEmail(token);
 
-    // TODO: Запросить учётные данные по имени пользователя у User Service
+    var credentialsDto = userServiceClient.findCredentialsByUsernameAndEmail(username, email);
+    if (credentialsDto == null) {
+      throw new CredentialsNotFoundException();
+    }
 
-    // return jwtService.createTokens(credentialsDto);
-
-    return null;
+    return jwtService.createTokens(credentialsDto);
   }
 }

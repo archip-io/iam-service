@@ -3,6 +3,7 @@ package com.archipio.iamservice.unittest.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 
 import com.archipio.iamservice.config.JwtProperties;
 import com.archipio.iamservice.dto.CredentialsDto;
@@ -23,10 +24,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@MockitoSettings(strictness = LENIENT)
 class JwtServiceImplTest {
 
   @Mock private JwtProperties jwtProperties;
@@ -105,6 +105,44 @@ class JwtServiceImplTest {
     // Do and Check
     assertThatExceptionOfType(InvalidOrExpiredJwtTokenException.class)
         .isThrownBy(() -> jwtService.extractUsername(token));
+  }
+
+  @Test
+  public void extractEmail_validToken_email() {
+    // Prepare
+    final var email = "email";
+    final var secret = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327854";
+    final var tokenTtl = 7 * 24 * 60 * 60 * 1000L;
+    final var token =
+        createToken(
+            secret, email, Map.of("email", email), new Date(System.currentTimeMillis() + tokenTtl));
+    when(jwtProperties.getSecret()).thenReturn(secret);
+
+    // Do
+    var actualEmail = jwtService.extractEmail(token);
+
+    // Check
+    assertThat(actualEmail).isEqualTo(email);
+  }
+
+  @Test
+  public void extractEmail_invalidTokenSign_thrownInvalidOrExpiredJwtTokenException() {
+    // Prepare
+    final var email = "email";
+    final var secret1 = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327853";
+    final var secret2 = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327854";
+    final var tokenTtl = 7 * 24 * 60 * 60 * 1000L;
+    final var token =
+        createToken(
+            secret1,
+            email,
+            Map.of("email", email),
+            new Date(System.currentTimeMillis() + tokenTtl));
+    when(jwtProperties.getSecret()).thenReturn(secret2);
+
+    // Do and Check
+    assertThatExceptionOfType(InvalidOrExpiredJwtTokenException.class)
+        .isThrownBy(() -> jwtService.extractEmail(token));
   }
 
   @Test

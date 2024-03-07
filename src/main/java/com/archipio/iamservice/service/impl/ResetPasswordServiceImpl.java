@@ -2,8 +2,10 @@ package com.archipio.iamservice.service.impl;
 
 import static com.archipio.iamservice.util.CacheUtils.RESET_PASSWORD_CACHE_TTL_S;
 
+import com.archipio.iamservice.client.UserServiceClient;
 import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import com.archipio.iamservice.dto.ResetPasswordDto;
+import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.ResetPasswordService;
 import java.util.UUID;
@@ -19,10 +21,14 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
   private static final String RESET_PASSWORD_KEY_PREFIX = "service:reset-password:";
 
   private final RedisTemplate<String, ResetPasswordDto> redisTemplate;
+  private final UserServiceClient userServiceClient;
 
   @Override
   public void resetPassword(ResetPasswordDto resetPasswordDto) {
-    // TODO: Проверить есть ли такой логин в UserService
+    var userCredentials = userServiceClient.findCredentialsByLogin(resetPasswordDto.getLogin());
+    if (userCredentials == null) {
+      throw new CredentialsNotFoundException();
+    }
 
     var token = UUID.randomUUID().toString();
     redisTemplate
@@ -38,10 +44,14 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
 
   @Override
   public void confirmPasswordReset(String token, ResetPasswordConfirmDto resetPasswordConfirmDto) {
-    var resetPasswordDto =
-        redisTemplate.opsForValue().getAndDelete(RESET_PASSWORD_KEY_PREFIX + token);
+    var resetPasswordDto = redisTemplate.opsForValue().get(RESET_PASSWORD_KEY_PREFIX + token);
     if (resetPasswordDto == null) {
       throw new InvalidOrExpiredConfirmationTokenException();
     }
+
+    userServiceClient.resetPassword(
+        resetPasswordDto.getLogin(), resetPasswordConfirmDto.getPassword());
+
+    redisTemplate.opsForValue().getAndDelete(RESET_PASSWORD_KEY_PREFIX + token);
   }
 }

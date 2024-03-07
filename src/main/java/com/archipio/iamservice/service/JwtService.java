@@ -9,5 +9,7 @@ public interface JwtService {
 
   String extractUsername(String token);
 
+  String extractEmail(String token);
+
   boolean validate(String token);
 }
