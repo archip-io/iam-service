@@ -1,7 +1,7 @@
 package com.archipio.iamservice.controller.sys.v0;
 
-import static com.archipio.iamservice.util.ApiUtils.SYS_V0_PREFIX;
-import static com.archipio.iamservice.util.ApiUtils.VALIDATE_TOKEN_SUFFIX;
+import static com.archipio.iamservice.util.PathUtils.SYS_V0_PREFIX;
+import static com.archipio.iamservice.util.PathUtils.VALIDATE_TOKEN_SUFFIX;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 

@@ -1,8 +1,8 @@
 package com.archipio.iamservice.controller.api.v0;
 
-import static com.archipio.iamservice.util.ApiUtils.API_V0_PREFIX;
-import static com.archipio.iamservice.util.ApiUtils.REGISTRATION_CONFIRM_SUFFIX;
-import static com.archipio.iamservice.util.ApiUtils.REGISTRATION_SUFFIX;
+import static com.archipio.iamservice.util.PathUtils.API_V0_PREFIX;
+import static com.archipio.iamservice.util.PathUtils.REGISTRATION_CONFIRM_SUFFIX;
+import static com.archipio.iamservice.util.PathUtils.REGISTRATION_SUFFIX;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.CREATED;
 

@@ -4,10 +4,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ApiUtils {
+public class PathUtils {
 
-  public static final String API_V0_PREFIX = "/api/v0/iam";
-  public static final String SYS_V0_PREFIX = "/sys/v0/iam";
+  public static final String API_V0_PREFIX = "/api/v0";
+  public static final String SYS_V0_PREFIX = "/sys/v0";
   public static final String AUTHENTICATION_SUFFIX = "/authenticate";
   public static final String REFRESH_TOKENS_SUFFIX = "/refresh-tokens";
   public static final String REGISTRATION_SUFFIX = "/register";
