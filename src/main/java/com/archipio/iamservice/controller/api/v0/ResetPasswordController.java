@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +30,7 @@ public class ResetPasswordController {
 
   private final ResetPasswordService resetPasswordService;
 
-  @PostMapping(RESET_PASSWORD_SUFFIX)
+  @PutMapping(RESET_PASSWORD_SUFFIX)
   @Operation(
       summary = "Сброс пароля пользователя",
       description = "Проверяет логин пользователя и при успехе отправляет письмо на почту")
@@ -39,7 +39,7 @@ public class ResetPasswordController {
     return ResponseEntity.status(ACCEPTED).build();
   }
 
-  @PostMapping(RESET_PASSWORD_CONFIRM_SUFFIX)
+  @PutMapping(RESET_PASSWORD_CONFIRM_SUFFIX)
   @Operation(
       summary = "Подтверждение сброса пароля и обновление пароля",
       description =
