@@ -18,30 +18,7 @@ public class RegistrationDtoTest {
 
   private Validator validator;
 
-  @BeforeEach
-  public void setUp() {
-    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-      validator = factory.getValidator();
-    }
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideInvalidCredentialsInputDto")
-  public void validate_invalidCredentialsInputDto_violationsIsNotEmpty(
-      RegistrationDto registrationDto, Set<String> expectedErrorFields) {
-    // Do
-    var violations = validator.validate(registrationDto);
-    var actualErrorFields =
-        violations.stream()
-            .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
-            .collect(Collectors.toSet());
-
-    // Check
-    assertThat(violations.isEmpty()).isFalse();
-    assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
-  }
-
-  private static Stream<Arguments> provideInvalidCredentialsInputDto() {
+  private static Stream<Arguments> provide_InvalidCredentialsInputDto() {
     return Stream.of(
         Arguments.of(
             RegistrationDto.builder()
@@ -134,5 +111,28 @@ public class RegistrationDtoTest {
                 .password("Password_")
                 .build(),
             Set.of("password")));
+  }
+
+  @BeforeEach
+  public void setUp() {
+    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+      validator = factory.getValidator();
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("provide_InvalidCredentialsInputDto")
+  public void validate_whenCredentialsInputDtoIsInvalid_thenViolationsIsNotEmpty(
+      RegistrationDto registrationDto, Set<String> expectedErrorFields) {
+    // Do
+    var violations = validator.validate(registrationDto);
+    var actualErrorFields =
+        violations.stream()
+            .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
+            .collect(Collectors.toSet());
+
+    // Check
+    assertThat(violations.isEmpty()).isFalse();
+    assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
   }
 }

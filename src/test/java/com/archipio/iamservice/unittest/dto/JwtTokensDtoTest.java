@@ -16,7 +16,7 @@ public class JwtTokensDtoTest {
   @Autowired private JacksonTester<JwtTokensDto> jwtTokensDtoJson;
 
   @Test
-  public void check_jwtTokensDtoTestWithoutErrors_jsonWithoutErrors() throws IOException {
+  public void checkJwtTokensDtoTestWithoutErrors() throws IOException {
     // Prepare
     final String accessToken = "Access Token";
     final String refreshToken = "Refresh Token";

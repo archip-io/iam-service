@@ -16,6 +16,7 @@ import com.archipio.iamservice.client.UserServiceClient;
 import com.archipio.iamservice.dto.CredentialsDto;
 import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import com.archipio.iamservice.dto.ResetPasswordDto;
+import com.archipio.iamservice.exception.BannedUserException;
 import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.impl.ResetPasswordServiceImpl;
@@ -38,14 +39,14 @@ public class ResetPasswordServiceImplTest {
   @InjectMocks private ResetPasswordServiceImpl resetPasswordService;
 
   @Test
-  public void resetPassword_validResetPasswordDto_Nothing() {
+  public void resetPassword_whenCredentialsExistsAndUserIsNotBanned_thenSaveCredentialsInCache() {
     // Prepare
-    final String login = "login";
-    var resetPasswordDto = ResetPasswordDto.builder().login(login).build();
-    var mockValueOperations = mock(ValueOperations.class);
+    final var login = "login";
+    final var resetPasswordDto = ResetPasswordDto.builder().login(login).build();
+    final var credentialsDto = CredentialsDto.builder().isEnabled(true).build();
+    final var mockValueOperations = mock(ValueOperations.class);
 
-    when(userServiceClient.findCredentialsByLogin(login))
-        .thenReturn(CredentialsDto.builder().build());
+    when(userServiceClient.findCredentialsByLogin(login)).thenReturn(credentialsDto);
     when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
     doNothing()
         .when(mockValueOperations)
@@ -70,10 +71,10 @@ public class ResetPasswordServiceImplTest {
   }
 
   @Test
-  public void resetPassword_credentialsNotFound_thrownCredentialsNotFoundException() {
+  public void resetPassword_whenCredentialsNotFound_thenThrownCredentialsNotFoundException() {
     // Prepare
-    final String login = "login";
-    var resetPasswordDto = ResetPasswordDto.builder().login(login).build();
+    final var login = "login";
+    final var resetPasswordDto = ResetPasswordDto.builder().login(login).build();
 
     when(userServiceClient.findCredentialsByLogin(login)).thenReturn(null);
 
@@ -86,14 +87,32 @@ public class ResetPasswordServiceImplTest {
   }
 
   @Test
-  public void confirmPasswordReset_validAndNotExpiredToken_Nothing() {
+  public void resetPassword_whenCredentialsExistsAndUserIsBanned_thenThrownBannedUserException() {
     // Prepare
-    final String token = "Token";
-    final String login = "login";
-    final String password = "Password_10";
-    var resetPasswordDto = ResetPasswordDto.builder().login(login).build();
-    var resetPasswordConfirmDto = ResetPasswordConfirmDto.builder().password(password).build();
-    var mockValueOperations = mock(ValueOperations.class);
+    final var login = "login";
+    final var resetPasswordDto = ResetPasswordDto.builder().login(login).build();
+    final var credentialsDto = CredentialsDto.builder().isEnabled(false).build();
+
+    when(userServiceClient.findCredentialsByLogin(login)).thenReturn(credentialsDto);
+
+    // Do
+    assertThatExceptionOfType(BannedUserException.class)
+        .isThrownBy(() -> resetPasswordService.resetPassword(resetPasswordDto));
+
+    // Check
+    verify(userServiceClient, only()).findCredentialsByLogin(login);
+  }
+
+  @Test
+  public void confirmPasswordReset_whenTokenIsValid_thenResetPassword() {
+    // Prepare
+    final var token = "Token";
+    final var login = "login";
+    final var password = "Password_10";
+    final var resetPasswordDto = ResetPasswordDto.builder().login(login).build();
+    final var resetPasswordConfirmDto =
+        ResetPasswordConfirmDto.builder().password(password).build();
+    final var mockValueOperations = mock(ValueOperations.class);
 
     when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
     when(mockValueOperations.get(any(String.class))).thenReturn(resetPasswordDto);
@@ -114,11 +133,11 @@ public class ResetPasswordServiceImplTest {
   }
 
   @Test
-  public void confirmPasswordReset_invalidOrExpiredToken_thrownInvalidOrExpiredTokenException() {
+  public void confirmPasswordReset_whenTokenIsInvalid_thrownInvalidOrExpiredTokenException() {
     // Prepare
     final String token = "Token";
-    var resetPasswordConfirmDto = ResetPasswordConfirmDto.builder().build();
-    var mockValueOperations = mock(ValueOperations.class);
+    final var resetPasswordConfirmDto = ResetPasswordConfirmDto.builder().build();
+    final var mockValueOperations = mock(ValueOperations.class);
 
     when(redisTemplate.opsForValue()).thenReturn(mockValueOperations);
     when(mockValueOperations.get(any(String.class))).thenReturn(null);

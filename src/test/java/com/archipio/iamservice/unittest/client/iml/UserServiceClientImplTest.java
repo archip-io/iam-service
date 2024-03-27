@@ -43,7 +43,7 @@ class UserServiceClientImplTest {
 
   @Test
   @Order(1)
-  void saveCredentials_restClientNotInitialize_thrownRestClientNotFoundException() {
+  void saveCredentials_whenRestClientNotInitialize_thenThrownRestClientNotFoundException() {
     // Prepare
     when(restClientProperties.getClients()).thenReturn(new HashMap<>());
 
@@ -54,7 +54,7 @@ class UserServiceClientImplTest {
 
   @Test
   @Order(2)
-  void saveCredentials_restClientUrlNotInitialize_thrownRestClientUrlNotFoundException() {
+  void saveCredentials_whenRestClientUrlNotInitialize_thenThrownRestClientUrlNotFoundException() {
     // Prepare
     when(restClientProperties.getClients())
         .thenReturn(
@@ -66,7 +66,7 @@ class UserServiceClientImplTest {
   }
 
   @Test
-  void findCredentialsByLogin_credentialsExists_credentialsDto() {
+  void findCredentialsByLogin_whenCredentialsExists_thenReturnCredentials() {
     // Prepare
     final var login = "login";
     final var credentialsDto = CredentialsDto.builder().build();
@@ -89,10 +89,9 @@ class UserServiceClientImplTest {
   }
 
   @Test
-  void findCredentialsByLogin_credentialsNotFound_null() {
+  void findCredentialsByLogin_whenCredentialsNotFound_thenReturnNull() {
     // Prepare
     final var login = "login";
-    final var credentialsDto = CredentialsDto.builder().build();
     when(restClientProperties.getClients())
         .thenReturn(
             Map.of(
@@ -112,10 +111,9 @@ class UserServiceClientImplTest {
   }
 
   @Test
-  void findCredentialsByLogin_unexpectedError_thrownHttpClientErrorException() {
+  void findCredentialsByLogin_whenUnexpectedError_thenThrownHttpClientErrorException() {
     // Prepare
     final var login = "login";
-    final var credentialsDto = CredentialsDto.builder().build();
     when(restClientProperties.getClients())
         .thenReturn(
             Map.of(
@@ -132,7 +130,7 @@ class UserServiceClientImplTest {
   }
 
   @Test
-  void findCredentialsByUsernameAndEmail_credentialsExists_credentialsDto() {
+  void findCredentialsByUsernameAndEmail_whenCredentialsExists_thenReturnCredentials() {
     // Prepare
     final var username = "username";
     final var email = "email";
@@ -156,11 +154,10 @@ class UserServiceClientImplTest {
   }
 
   @Test
-  void findCredentialsByUsernameAndEmail_credentialsNotFound_null() {
+  void findCredentialsByUsernameAndEmail_whenCredentialsNotFound_thenReturnNull() {
     // Prepare
     final var username = "username";
     final var email = "email";
-    final var credentialsDto = CredentialsDto.builder().build();
     when(restClientProperties.getClients())
         .thenReturn(
             Map.of(
@@ -180,11 +177,10 @@ class UserServiceClientImplTest {
   }
 
   @Test
-  void findCredentialsByUsernameAndEmail_unexpectedError_thrownHttpClientErrorException() {
+  void findCredentialsByUsernameAndEmail_whenUnexpectedError_thenThrownHttpClientErrorException() {
     // Prepare
     final var username = "username";
     final var email = "email";
-    final var credentialsDto = CredentialsDto.builder().build();
     when(restClientProperties.getClients())
         .thenReturn(
             Map.of(

@@ -18,6 +18,15 @@ public class AuthenticationDtoTest {
 
   private Validator validator;
 
+  private static Stream<Arguments> provide_InvalidAuthenticationDto() {
+    return Stream.of(
+        Arguments.of(
+            AuthenticationDto.builder().login(null).password("Password_10").build(),
+            Set.of("login")),
+        Arguments.of(
+            AuthenticationDto.builder().login("user").password(null).build(), Set.of("password")));
+  }
+
   @BeforeEach
   public void setUp() {
     try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
@@ -26,8 +35,8 @@ public class AuthenticationDtoTest {
   }
 
   @ParameterizedTest
-  @MethodSource("provideInvalidAuthenticationDto")
-  public void validate_invalidAuthenticationDto_violationsIsNotEmpty(
+  @MethodSource("provide_InvalidAuthenticationDto")
+  public void validate_whenAuthenticationDtoIsInvalid_thenViolationsIsNotEmpty(
       AuthenticationDto authenticationDto, Set<String> expectedErrorFields) {
     // Do
     var violations = validator.validate(authenticationDto);
@@ -39,14 +48,5 @@ public class AuthenticationDtoTest {
     // Check
     assertThat(violations.isEmpty()).isFalse();
     assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
-  }
-
-  private static Stream<Arguments> provideInvalidAuthenticationDto() {
-    return Stream.of(
-        Arguments.of(
-            AuthenticationDto.builder().login(null).password("Password_10").build(),
-            Set.of("login")),
-        Arguments.of(
-            AuthenticationDto.builder().login("user").password(null).build(), Set.of("password")));
   }
 }

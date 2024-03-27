@@ -36,7 +36,7 @@ public class RegistrationServiceImplTest {
   @InjectMocks private RegistrationServiceImpl registrationService;
 
   @Test
-  public void register_validCredentialsInputDto_Nothing() {
+  public void register_whenCredentialsIsValid_thenStartRegistration() {
     // Prepare
     final String username = "username";
     final String email = "user@mail.ru";
@@ -70,7 +70,7 @@ public class RegistrationServiceImplTest {
   }
 
   @Test
-  public void register_credentialsExists_thrownCredentialsAlreadyExistsException() {
+  public void register_whenCredentialsAlreadyExists_thenThrownCredentialsAlreadyExistsException() {
     // Prepare
     final String username = "username";
     final String email = "user@mail.ru";
@@ -90,7 +90,7 @@ public class RegistrationServiceImplTest {
   }
 
   @Test
-  public void confirmRegistration_validAndNotExpiredToken_Nothing() {
+  public void confirmRegistration_whenTokenIsValid_thenRegisterUser() {
     // Prepare
     final String token = "Token";
     var registrationDto = RegistrationDto.builder().build();
@@ -108,7 +108,7 @@ public class RegistrationServiceImplTest {
   }
 
   @Test
-  public void confirmRegistration_invalidOrExpiredToken_thrownInvalidOrExpiredTokenException() {
+  public void confirmRegistration_whenTokenIsInvalid_thenThrownInvalidOrExpiredTokenException() {
     // Prepare
     final String token = "Token";
     var mockValueOperations = mock(ValueOperations.class);
