@@ -2,14 +2,12 @@ package com.archipio.iamservice.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,8 +19,7 @@ public class JwtProperties {
   private AccessTokenProperties accessToken;
   private RefreshTokenProperties refreshToken;
 
-  @Getter
-  @Setter
+  @Data
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
@@ -31,8 +28,7 @@ public class JwtProperties {
     private long ttl;
   }
 
-  @Getter
-  @Setter
+  @Data
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder

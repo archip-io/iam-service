@@ -3,6 +3,7 @@ package com.archipio.iamservice.service.impl;
 import com.archipio.iamservice.client.UserServiceClient;
 import com.archipio.iamservice.dto.AuthenticationDto;
 import com.archipio.iamservice.dto.JwtTokensDto;
+import com.archipio.iamservice.exception.BannedUserException;
 import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.AuthenticationService;
@@ -26,6 +27,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     if (credentialsDto == null) {
       throw new CredentialsNotFoundException();
     }
+    if (!credentialsDto.getIsEnabled()) {
+      throw new BannedUserException();
+    }
 
     return jwtService.createTokens(credentialsDto);
   }
@@ -41,6 +45,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     var credentialsDto = userServiceClient.findCredentialsByUsernameAndEmail(username, email);
     if (credentialsDto == null) {
       throw new CredentialsNotFoundException();
+    }
+    if (!credentialsDto.getIsEnabled()) {
+      throw new BannedUserException();
     }
 
     return jwtService.createTokens(credentialsDto);

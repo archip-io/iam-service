@@ -18,7 +18,7 @@ public class ErrorDtoTest {
   @Autowired private JacksonTester<ErrorDto> errorDtoJson;
 
   @Test
-  public void check_errorDtoTestWithoutErrors_jsonWithoutErrors() throws IOException {
+  public void checkErrorDtoTestWithoutErrors() throws IOException {
     // Prepare
     final Instant createdAt = Instant.now();
     final String message = "Message";

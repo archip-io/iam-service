@@ -34,7 +34,7 @@ class JwtServiceImplTest {
   @InjectMocks private JwtServiceImpl jwtService;
 
   @Test
-  public void createTokens_credentials_validJwtTokens() {
+  public void createTokens_whenCredentialsIsValid_thenReturnJwtTokens() {
     // Prepare
     final var username = "user";
     final var email = "user@mail.ru";
@@ -67,7 +67,7 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void extractUsername_validToken_username() {
+  public void extractUsername_whenTokenIsValid_thenReturnUsername() {
     // Prepare
     final var username = "user";
     final var secret = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327854";
@@ -88,7 +88,8 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void extractUsername_invalidTokenSign_thrownInvalidOrExpiredJwtTokenException() {
+  public void
+      extractUsername_whenTokenHasInvalidSign_thenThrownInvalidOrExpiredJwtTokenException() {
     // Prepare
     final var username = "user";
     final var secret1 = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327853";
@@ -108,7 +109,7 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void extractEmail_validToken_email() {
+  public void extractEmail_whenTokenIsValid_thenReturnEmail() {
     // Prepare
     final var email = "email";
     final var secret = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327854";
@@ -126,7 +127,7 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void extractEmail_invalidTokenSign_thrownInvalidOrExpiredJwtTokenException() {
+  public void extractEmail_whenTokenHasInvalidSign_thenThrownInvalidOrExpiredJwtTokenException() {
     // Prepare
     final var email = "email";
     final var secret1 = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327853";
@@ -146,7 +147,7 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void validate_validToken_true() {
+  public void validate_whenTokenIsValid_thenReturnTrue() {
     // Prepare
     final var username = "user";
     final var secret = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327854";
@@ -163,7 +164,7 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void validate_expiredToken_false() {
+  public void validate_whenTokenHasExpired_thenReturnFalse() {
     // Prepare
     final var username = "user";
     final var secret = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327854";
@@ -180,7 +181,7 @@ class JwtServiceImplTest {
   }
 
   @Test
-  public void validate_invalidTokenSign_false() {
+  public void validate_whenTokenHasInvalidSign_thenReturnFalse() {
     // Prepare
     final var username = "user";
     final var secret1 = "53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327853";

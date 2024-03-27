@@ -2,12 +2,14 @@ package com.archipio.iamservice.controller;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.archipio.iamservice.dto.ErrorDto;
+import com.archipio.iamservice.exception.BannedUserException;
 import com.archipio.iamservice.exception.CredentialsAlreadyExistsException;
 import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
@@ -51,165 +53,134 @@ public class ExceptionCatcher {
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.validation-error", null, RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.validation-error", request))
                 .errors(errors)
                 .build());
   }
 
   @ExceptionHandler(NoHandlerFoundException.class)
-  public ResponseEntity<ErrorDto> handleNoHandlerFoundException(
-      HttpServletRequest request, NoHandlerFoundException e) {
+  public ResponseEntity<ErrorDto> handleNoHandlerFoundException(HttpServletRequest request) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.endpoint-not-found",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.endpoint-not-found", request))
                 .build());
   }
 
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<ErrorDto> handleHttpRequestMethodNotSupportedException(
-      HttpServletRequest request, HttpRequestMethodNotSupportedException e) {
+      HttpServletRequest request) {
     return ResponseEntity.status(METHOD_NOT_ALLOWED)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.method-not-supported",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.method-not-supported", request))
                 .build());
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorDto> handleHttpMessageNotReadableException(
-      HttpServletRequest request, HttpMessageNotReadableException e) {
+      HttpServletRequest request) {
     return ResponseEntity.status(BAD_REQUEST)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.invalid-json-format",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.invalid-json-format", request))
                 .build());
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ResponseEntity<ErrorDto> handleMissingServletRequestParameterException(
-      HttpServletRequest request, MissingServletRequestParameterException e) {
+      HttpServletRequest request) {
     return ResponseEntity.status(BAD_REQUEST)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.missing-request-parameter",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.missing-request-parameter", request))
                 .build());
   }
 
   @ExceptionHandler(CredentialsAlreadyExistsException.class)
   public ResponseEntity<ErrorDto> handleCredentialAlreadyExistsException(
-      HttpServletRequest request, CredentialsAlreadyExistsException e) {
+      HttpServletRequest request) {
     return ResponseEntity.status(CONFLICT)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.credentials-already-exists",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.credentials-already-exists", request))
                 .build());
   }
 
   @ExceptionHandler(CredentialsNotFoundException.class)
-  public ResponseEntity<ErrorDto> handleCredentialsNotFoundException(
-      HttpServletRequest request, CredentialsNotFoundException e) {
+  public ResponseEntity<ErrorDto> handleCredentialsNotFoundException(HttpServletRequest request) {
     return ResponseEntity.status(NOT_FOUND)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.credentials-not-found",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.credentials-not-found", request))
+                .build());
+  }
+
+  @ExceptionHandler(BannedUserException.class)
+  public ResponseEntity<ErrorDto> handleBannedUserException(HttpServletRequest request) {
+    return ResponseEntity.status(FORBIDDEN)
+        .body(
+            ErrorDto.builder()
+                .createdAt(Instant.now())
+                .message(getMessage("exception.banned-user", request))
                 .build());
   }
 
   @ExceptionHandler(InvalidOrExpiredConfirmationTokenException.class)
-  public ResponseEntity<ErrorDto> handleInvalidOrExpiredTokenException(
-      HttpServletRequest request, InvalidOrExpiredConfirmationTokenException e) {
+  public ResponseEntity<ErrorDto> handleInvalidOrExpiredTokenException(HttpServletRequest request) {
     return ResponseEntity.status(BAD_REQUEST)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.invalid-or-expired-confirmation-token",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.invalid-or-expired-confirmation-token", request))
                 .build());
   }
 
   @ExceptionHandler(InvalidOrExpiredJwtTokenException.class)
   public ResponseEntity<ErrorDto> handleInvalidOrExpiredJwtTokenException(
-      HttpServletRequest request, InvalidOrExpiredJwtTokenException e) {
+      HttpServletRequest request) {
     return ResponseEntity.status(UNAUTHORIZED)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.invalid-or-expired-jwt-token",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.invalid-or-expired-jwt-token", request))
                 .build());
   }
 
   @ExceptionHandler(NullTokenException.class)
-  public ResponseEntity<ErrorDto> handleNullTokenException(
-      HttpServletRequest request, NullTokenException e) {
+  public ResponseEntity<ErrorDto> handleNullTokenException(HttpServletRequest request) {
     return ResponseEntity.status(BAD_REQUEST)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.null-token", null, RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.null-token", request))
                 .build());
   }
 
   @ExceptionHandler(HttpClientErrorException.class)
-  public ResponseEntity<String> handleHttpClientErrorException(
-      HttpServletRequest request, HttpClientErrorException e) {
+  public ResponseEntity<String> handleHttpClientErrorException(HttpClientErrorException e) {
     var code = e.getStatusCode();
     var body = e.getResponseBodyAsString();
     return ResponseEntity.status(code).body(body);
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorDto> handleException(HttpServletRequest request, Exception e) {
+  public ResponseEntity<ErrorDto> handleException(HttpServletRequest request) {
     return ResponseEntity.status(INTERNAL_SERVER_ERROR)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(
-                    messageSource.getMessage(
-                        "exception.internal-server-error",
-                        null,
-                        RequestContextUtils.getLocale(request)))
+                .message(getMessage("exception.internal-server-error", request))
                 .build());
+  }
+
+  private String getMessage(String code, HttpServletRequest request) {
+    return messageSource.getMessage(code, null, RequestContextUtils.getLocale(request));
   }
 }

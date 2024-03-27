@@ -5,6 +5,7 @@ import static com.archipio.iamservice.util.CacheUtils.RESET_PASSWORD_CACHE_TTL_S
 import com.archipio.iamservice.client.UserServiceClient;
 import com.archipio.iamservice.dto.ResetPasswordConfirmDto;
 import com.archipio.iamservice.dto.ResetPasswordDto;
+import com.archipio.iamservice.exception.BannedUserException;
 import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.service.ResetPasswordService;
@@ -25,9 +26,12 @@ public class ResetPasswordServiceImpl implements ResetPasswordService {
 
   @Override
   public void resetPassword(ResetPasswordDto resetPasswordDto) {
-    var userCredentials = userServiceClient.findCredentialsByLogin(resetPasswordDto.getLogin());
-    if (userCredentials == null) {
+    var credentialsDto = userServiceClient.findCredentialsByLogin(resetPasswordDto.getLogin());
+    if (credentialsDto == null) {
       throw new CredentialsNotFoundException();
+    }
+    if (!credentialsDto.getIsEnabled()) {
+      throw new BannedUserException();
     }
 
     var token = UUID.randomUUID().toString();

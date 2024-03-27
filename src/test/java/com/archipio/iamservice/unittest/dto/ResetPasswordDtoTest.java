@@ -18,6 +18,10 @@ public class ResetPasswordDtoTest {
 
   private Validator validator;
 
+  private static Stream<Arguments> provide_InvalidResetPasswordDto() {
+    return Stream.of(Arguments.of(ResetPasswordDto.builder().login(null).build(), Set.of("login")));
+  }
+
   @BeforeEach
   public void setUp() {
     try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
@@ -26,8 +30,8 @@ public class ResetPasswordDtoTest {
   }
 
   @ParameterizedTest
-  @MethodSource("provideInvalidResetPasswordDto")
-  public void validate_invalidResetPasswordDto_violationsIsNotEmpty(
+  @MethodSource("provide_InvalidResetPasswordDto")
+  public void validate_whenResetPasswordDtoIsInvalid_thenViolationsIsNotEmpty(
       ResetPasswordDto resetPasswordDto, Set<String> expectedErrorFields) {
     // Do
     var violations = validator.validate(resetPasswordDto);
@@ -39,9 +43,5 @@ public class ResetPasswordDtoTest {
     // Check
     assertThat(violations.isEmpty()).isFalse();
     assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
-  }
-
-  private static Stream<Arguments> provideInvalidResetPasswordDto() {
-    return Stream.of(Arguments.of(ResetPasswordDto.builder().login(null).build(), Set.of("login")));
   }
 }

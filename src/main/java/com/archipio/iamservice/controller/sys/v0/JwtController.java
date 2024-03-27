@@ -3,8 +3,8 @@ package com.archipio.iamservice.controller.sys.v0;
 import static com.archipio.iamservice.util.PathUtils.SYS_V0_PREFIX;
 import static com.archipio.iamservice.util.PathUtils.VALIDATE_TOKEN_SUFFIX;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
 import com.archipio.iamservice.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,9 +32,9 @@ public class JwtController {
       @Parameter(name = "token", description = "JWT access token", required = true)
           @RequestParam("token")
           String token) {
-    if (jwtService.validate(token)) {
-      return ResponseEntity.status(OK).build();
+    if (!jwtService.validate(token)) {
+      throw new InvalidOrExpiredJwtTokenException();
     }
-    return ResponseEntity.status(UNAUTHORIZED).build();
+    return ResponseEntity.status(OK).build();
   }
 }

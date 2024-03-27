@@ -18,30 +18,7 @@ public class ResetPasswordConfirmDtoTest {
 
   private Validator validator;
 
-  @BeforeEach
-  public void setUp() {
-    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-      validator = factory.getValidator();
-    }
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideInvalidResetPasswordConfirmDto")
-  public void validate_invalidResetPasswordConfirmDto_violationsIsNotEmpty(
-      ResetPasswordConfirmDto resetPasswordConfirmDto, Set<String> expectedErrorFields) {
-    // Do
-    var violations = validator.validate(resetPasswordConfirmDto);
-    var actualErrorFields =
-        violations.stream()
-            .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
-            .collect(Collectors.toSet());
-
-    // Check
-    assertThat(violations.isEmpty()).isFalse();
-    assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
-  }
-
-  private static Stream<Arguments> provideInvalidResetPasswordConfirmDto() {
+  private static Stream<Arguments> provide_InvalidResetPasswordConfirmDto() {
     return Stream.of(
         Arguments.of(ResetPasswordConfirmDto.builder().password(null).build(), Set.of("password")),
         Arguments.of(
@@ -57,5 +34,28 @@ public class ResetPasswordConfirmDtoTest {
                 .password("Password_10Password_10Password_10Password_10Password_10Password_10")
                 .build(),
             Set.of("password")));
+  }
+
+  @BeforeEach
+  public void setUp() {
+    try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+      validator = factory.getValidator();
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("provide_InvalidResetPasswordConfirmDto")
+  public void validate_whenResetPasswordConfirmDtoIsInvalid_thenViolationsIsNotEmpty(
+      ResetPasswordConfirmDto resetPasswordConfirmDto, Set<String> expectedErrorFields) {
+    // Do
+    var violations = validator.validate(resetPasswordConfirmDto);
+    var actualErrorFields =
+        violations.stream()
+            .map(constraintViolation -> constraintViolation.getPropertyPath().toString())
+            .collect(Collectors.toSet());
+
+    // Check
+    assertThat(violations.isEmpty()).isFalse();
+    assertThat(actualErrorFields).containsExactlyInAnyOrderElementsOf(expectedErrorFields);
   }
 }
