@@ -180,6 +180,7 @@ fabric.properties
 
 ### dotenv template
 .env
+.env.development
 
 ### Linux template
 *~

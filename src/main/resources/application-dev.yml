@@ -3,16 +3,13 @@ spring:
     name: iam-service
   data:
     redis:
-      database: 0
-      host: localhost
-      port: 16379
-      password: password
+      host: ${ARCHIPIO_IAM_SERVICE_CACHE_HOST}
+      port: ${ARCHIPIO_IAM_SERVICE_CACHE_PORT}
+      password: ${ARCHIPIO_IAM_SERVICE_CACHE_PASSWORD}
 server:
   port: 18081
-  servlet:
-    context-path: /iam
 jwt:
-  secret: 53A73E5F1C4E0A2D3B5F2D784E6A1B423D6F247D1F6E5C3A596D635A75327855
+  secret: ${ARCHIPIO_IAM_SERVICE_SECRET}
   access-token:
     ttl: 1200
   refresh-token:
@@ -20,7 +17,7 @@ jwt:
 rest:
   clients:
     user-service:
-      url: http://localhost:18082
+      url: ${ARCHIPIO_IAM_SERVICE_USER_SERVICE_URL}
 springdoc:
   swagger-ui:
     path: /swagger-ui
