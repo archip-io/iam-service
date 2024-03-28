@@ -1,0 +1,512 @@
+openapi: 3.0.0
+info:
+  title: IAM Service
+  description: |
+    IAM Service (Identity and Access Management Service) - это микросервис, который отвечает за управление 
+    идентификацией и доступом пользователей
+  version: 0.0.0
+servers:
+  - url: http://localhost:18081
+    description: Local Server URL
+tags:
+  - name: Authentication
+    description: Эндпоинты для аутентификации пользователей и обновления их JWT токенов
+  - name: Registration
+    description: Эндпоинты для регистрации пользователей
+  - name: Reset Password
+    description: Эндпоинты для сброса паролей пользователей
+  - name: System
+    description: Эндпоинты для проверки JWT токенов другими микросервисами
+paths:
+  /api/v0/iam/authenticate:
+    post:
+      tags:
+        - Authentication
+      summary: Аутентификация пользователя
+      description: Проверяет логин и пароль пользователя и при успехе возвращает JWT токены
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationDto'
+        required: true
+      responses:
+        '200':
+          description: Пользователь успешно аутентифицирован
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/JwtTokensDto'
+        '400':
+          description: Некорректные входные данные; Неправильный пароль
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Некорректные входные данные:
+                  description: Некорректные входные данные
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'Validation error:'
+                    errors:
+                      login: The login must be not null.
+                Неправильный пароль:
+                  description: Неправильный пароль
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: Password is incorrect.
+        '403':
+          description: Пользователь заблокирован
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Пользователь заблокирован:
+                  description: Пользователь заблокирован
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The user is banned.'
+        '404':
+          description: Учетные данные не найдены
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Учетные данные не найдены:
+                  description: Учетные данные не найдены
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The user with such credentials not found.'
+        '500':
+          description: Ошибка на сервере
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Internal server error.
+  /api/v0/iam/refresh-tokens:
+    get:
+      tags:
+        - Authentication
+      summary: Обновление JWT токенов
+      description: Проверяет валидность токена обновления и при успехе возвращает JWT токены
+      operationId: refreshTokens
+      parameters:
+        - name: token
+          in: query
+          description: JWT токен обновления
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Токены успешно обновлены
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/JwtTokensDto'
+        '401':
+          description: Токен обновления просрочен или имеет неверную подпись
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Токен обновления просрочен или имеет неверную подпись:
+                  description: Токен обновления просрочен или имеет неверную подпись
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The JWT token is invalid or has expired.'
+        '403':
+          description: Пользователь заблокирован
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Учетные данные не найдены:
+                  description: Пользователь заблокирован
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The user is banned.'
+        '404':
+          description: Учетные данные не найдены
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Учетные данные не найдены:
+                  description: Учетные данные не найдены
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The user with such credentials not found.'
+        '500':
+          description: Ошибка на сервере
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Internal server error.
+  /api/v0/iam/register:
+    post:
+      tags:
+        - Registration
+      summary: Регистрация пользователя
+      description: Проверяет имя пользователя, email и пароль пользователя и при успехе отправляет письмо на почту
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationDto'
+        required: true
+      responses:
+        '201':
+          description: Данные для регистрации успешно приняты
+        '400':
+          description: Некорректные входные данные; Неправильный пароль
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Некорректные входные данные:
+                  description: Некорректные входные данные
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'Validation error:'
+                    errors:
+                      login: The username must start with a letter and contain only Latin letters, numbers and underscores.
+        '409':
+          description: Учетные данные уже существуют
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Учетные данные уже существуют:
+                  description: Учетные данные уже существуют
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The user with such credentials already exists.'
+        '500':
+          description: Ошибка на сервере
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Internal server error.
+  /api/v0/iam/register/confirm:
+    get:
+      tags:
+        - Registration
+      summary: Подтверждение регистрации пользователя
+      description: Проверяет токен подтверждения и при успехе сохраняет пользователя
+      operationId: confirmRegistration
+      parameters:
+        - name: token
+          in: query
+          description: Токен подтверждения
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Пользователь успешно зарегистрирован
+        '400':
+          description: Токен подтверждения неверен или просрочен
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Токен подтверждения пропущен:
+                  description: Токен подтверждения пропущен
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The confirmation token must be not null.'
+                Токен подтверждения неверен или просрочен:
+                  description: Токен подтверждения неверен или просрочен
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The confirmation token is invalid or has expired.'
+        '409':
+          description: Имя пользователя или адрес электронной почты заняты
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Username already exists.
+        '500':
+          description: Ошибка на сервере
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Internal server error.
+  /api/v0/iam/reset-password:
+    patch:
+      tags:
+        - Reset Password
+      summary: Сброс пароля пользователя
+      description: Проверяет логин пользователя и при успехе отправляет письмо на почту
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordDto'
+        required: true
+      responses:
+        '200':
+          description: Данные для сброса пароля успешно приняты
+        '400':
+          description: Некорректные входные данные
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Некорректные входные данные:
+                  description: Некорректные входные данные
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'Validation error:'
+                    errors:
+                      login: The login must be not null.
+        '403':
+          description: Пользователь заблокирован
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Пользователь заблокирован:
+                  description: Пользователь заблокирован
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The user is banned.'
+        '404':
+          description: Учетные данные не найдены
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Учетные данные не найдены:
+                  description: Учетные данные не найдены
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The user with such credentials not found.'
+        '500':
+          description: Ошибка на сервере
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Internal server error.
+  /api/v0/iam/reset-password/confirm:
+    patch:
+      tags:
+        - Reset Password
+      summary: Подтверждение сброса пароля и обновление пароля
+      description: Проверяет токен подтверждения и новый пароль пользователя и при успехе обновляет пароль
+      operationId: confirmResetPassword
+      parameters:
+        - name: token
+          in: query
+          description: Токен подтверждения
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordConfirmDto'
+        required: true
+      responses:
+        '200':
+          description: Пароль успешно сброшен
+        '400':
+          description: Некорректные входные данные
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Некорректные входные данные:
+                  description: Некорректные входные данные
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'Validation error:'
+                    errors:
+                      login: The password must contain upper and lowercase Latin letters, a number, and a special character.
+                Токен подтверждения пропущен:
+                  description: Токен подтверждения пропущен
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The confirmation token must be not null.'
+                Токен подтверждения неверен или просрочен:
+                  description: Токен подтверждения неверен или просрочен
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The confirmation token is invalid or has expired.'
+        '500':
+          description: Ошибка на сервере
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Internal server error.
+  /sys/v0/iam/validate-token:
+    get:
+      tags:
+        - System
+      summary: Валидация токена доступа
+      description: Проверяет подпись и срок действия JWT токена доступа
+      operationId: validateToken
+      parameters:
+        - name: token
+          in: query
+          description: JWT токен доступа
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Токен валиден
+        '401':
+          description: Токен обновления просрочен или имеет неверную подпись
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              examples:
+                Токен обновления просрочен или имеет неверную подпись:
+                  description: Токен обновления просрочен или имеет неверную подпись
+                  value:
+                    created_at: '2024-03-27T03:26:19.385Z'
+                    message: 'The JWT token is invalid or has expired.'
+        '500':
+          description: Ошибка на сервере
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
+              example:
+                created_at: '2024-03-27T03:26:19.385Z'
+                message: Internal server error.
+components:
+  schemas:
+    ErrorDto:
+      required:
+        - created_at
+        - message
+      type: object
+      properties:
+        message:
+          type: string
+          description: Сообщение ошибки
+          example: 'Validation error:'
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+            description: Название поля и его ошибки
+            example: '{"username":"The username must start with a letter and contain only Latin letters, numbers and underscores."}'
+          description: Название поля и его ошибки
+          example:
+            username: The username must start with a letter and contain only Latin letters, numbers and underscores.
+        created_at:
+          type: string
+          description: Время создания
+          format: date-time
+          example: '2024-03-27T03:57:26.951Z'
+    ResetPasswordDto:
+      required:
+        - login
+      type: object
+      properties:
+        login:
+          type: string
+          description: Логин пользователя (Имя пользователя или email)
+          example: 'user'
+    ResetPasswordConfirmDto:
+      required:
+        - password
+      type: object
+      properties:
+        password:
+          pattern: ^(?=.*[A-Z])(?=.*[\W_])(?=.*[0-9])(?=.*[a-z]).+$
+          type: string
+          description: Пароль
+          example: 'Password_10'
+    RegistrationDto:
+      required:
+        - email
+        - password
+        - username
+      type: object
+      properties:
+        username:
+          pattern: ^[a-zA-Z]\w+$
+          type: string
+          description: Имя пользователя
+          example: 'user'
+        email:
+          type: string
+          description: Email
+          example: 'user@mail.ru'
+        password:
+          pattern: ^(?=.*[A-Z])(?=.*[\W_])(?=.*[0-9])(?=.*[a-z]).+$
+          type: string
+          description: Пароль
+          example: 'Password_10'
+    AuthenticationDto:
+      required:
+        - login
+        - password
+      type: object
+      properties:
+        login:
+          type: string
+          description: Логин пользователя (Имя пользователя или email)
+          example: 'user'
+        password:
+          type: string
+          description: Пароль пользователя
+          example: 'Password_10'
+    JwtTokensDto:
+      required:
+        - access_token
+        - refresh_token
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Токен доступа
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+        refresh_token:
+          type: string
+          description: Токен обновления
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'

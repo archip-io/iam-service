@@ -14,7 +14,7 @@ import com.archipio.iamservice.exception.CredentialsAlreadyExistsException;
 import com.archipio.iamservice.exception.CredentialsNotFoundException;
 import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
 import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
-import com.archipio.iamservice.exception.NullTokenException;
+import com.archipio.iamservice.exception.NullConfirmationTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -153,13 +153,13 @@ public class ExceptionCatcher {
                 .build());
   }
 
-  @ExceptionHandler(NullTokenException.class)
+  @ExceptionHandler(NullConfirmationTokenException.class)
   public ResponseEntity<ErrorDto> handleNullTokenException(HttpServletRequest request) {
     return ResponseEntity.status(BAD_REQUEST)
         .body(
             ErrorDto.builder()
                 .createdAt(Instant.now())
-                .message(getMessage("exception.null-token", request))
+                .message(getMessage("exception.null-confirmation-token", request))
                 .build());
   }
 
