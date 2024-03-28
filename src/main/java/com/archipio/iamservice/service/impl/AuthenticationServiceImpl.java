@@ -5,7 +5,7 @@ import com.archipio.iamservice.dto.AuthenticationDto;
 import com.archipio.iamservice.dto.JwtTokensDto;
 import com.archipio.iamservice.exception.BannedUserException;
 import com.archipio.iamservice.exception.CredentialsNotFoundException;
-import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
 import com.archipio.iamservice.service.AuthenticationService;
 import com.archipio.iamservice.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   @Override
   public JwtTokensDto refresh(String token) {
     if (!jwtService.validate(token)) {
-      throw new InvalidOrExpiredConfirmationTokenException();
+      throw new InvalidOrExpiredJwtTokenException();
     }
     var username = jwtService.extractUsername(token);
     var email = jwtService.extractEmail(token);

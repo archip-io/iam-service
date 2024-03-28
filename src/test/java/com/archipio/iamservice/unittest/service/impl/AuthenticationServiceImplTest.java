@@ -15,7 +15,7 @@ import com.archipio.iamservice.dto.CredentialsDto;
 import com.archipio.iamservice.dto.JwtTokensDto;
 import com.archipio.iamservice.exception.BannedUserException;
 import com.archipio.iamservice.exception.CredentialsNotFoundException;
-import com.archipio.iamservice.exception.InvalidOrExpiredConfirmationTokenException;
+import com.archipio.iamservice.exception.InvalidOrExpiredJwtTokenException;
 import com.archipio.iamservice.service.JwtService;
 import com.archipio.iamservice.service.impl.AuthenticationServiceImpl;
 import java.util.List;
@@ -190,13 +190,13 @@ class AuthenticationServiceImplTest {
   }
 
   @Test
-  public void refresh_whenTokenIsIncorrect_thenThrownInvalidOrExpiredConfirmationTokenException() {
+  public void refresh_whenTokenIsIncorrect_thenThrownInvalidOrExpiredJwtTokenException() {
     // Prepare
     final var token = "oldRefreshToken";
     when(jwtService.validate(token)).thenReturn(false);
 
     // Do
-    assertThatExceptionOfType(InvalidOrExpiredConfirmationTokenException.class)
+    assertThatExceptionOfType(InvalidOrExpiredJwtTokenException.class)
         .isThrownBy(() -> authenticationService.refresh(token));
 
     // Check
